@@ -3,7 +3,7 @@
 
 
 
-int main(void){
+aint main(void){
 
 	return 0; 
 }
