@@ -1,9 +1,5 @@
 
 
-void test(){
-    return;
-}
-
 
 int main(void){
 
