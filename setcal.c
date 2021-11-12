@@ -6,6 +6,7 @@ typedef struct
 {
     char **elements;
     int count;
+    int id;
 } Set;
 
 typedef struct
@@ -76,7 +77,7 @@ void printData(Data data)
     printf("\n sets: \n\n ");
     for (int i = 0; i < data.setsCout; i++)
     {
-
+        printf("%d: ", data.sets[i]->id);
         for (int j = 0; j < data.sets[i]->count; j++)
         {
 
@@ -105,6 +106,7 @@ Data Load(char file[])
     char c = 0;
     data.sets = (Set **)malloc(100 * sizeof(Set *));
     data.universum = (Set *)malloc(sizeof(Set));
+    int line = 0;
 
     //nacitani prvniho znaku na kazdym radku
     while ((c = fgetc(fp)) != EOF)
@@ -118,6 +120,7 @@ Data Load(char file[])
         case 'S':
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
             loadSet(fp, data.sets[data.setsCout]);
+            data.sets[data.setsCout]->id = line;
             data.setsCout++;
             break;
         case 'R': //TODO:
@@ -125,6 +128,7 @@ Data Load(char file[])
         case 'C': //TODO:
             break;
         }
+        line++;
     }
     printData(data);
     return data;
