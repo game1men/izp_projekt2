@@ -65,6 +65,7 @@ int loadSet(FILE *file, Set *set)
         set->elements[j][i] = c;
     }
 
+
     return;
 }
 
@@ -152,6 +153,7 @@ Data Load(char file[])
     printData(data);
     return data;
 }
+
 
 int main(void)
 {
