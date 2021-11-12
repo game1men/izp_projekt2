@@ -17,4 +17,6 @@ jobs:
       run: make
     - name: make check
       run: make check
+    - name: make valgrind
+      run: make valgrind
 
