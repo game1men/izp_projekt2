@@ -1,5 +1,5 @@
 make: setcal.c
-	gcc -std=c99 -Wall -Wextra -Werror setcal.c -o setcal
+	gcc -std=c99 -Wall -Wextra -g -Werror setcal.c -o setcal
 
 debug: setcal.c
 	gcc -std=c99 setcal.c -g -o -Wall -Wextra setcal
