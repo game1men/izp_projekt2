@@ -14,26 +14,44 @@ typedef struct
     Set **sets;
     int setsCout;
     Set *universum;
+    bool err;
 } Data;
 
 /**
- * @brief nacte set do structu (max 100 setu maximalne 100 znaku dlouhych TODO:nekonecno znaku a setu)
+ * @brief nacte set do structu
  *
  * @param file ukazatel na soubor
  * @param set
+ * @return int
+ *      @retval 0 vporadku
+ *      @retval -1 chyba
  */
-void loadSet(FILE *file, Set *set)
+int loadSet(FILE *file, Set *set)
 {
+    //inicializace
+    int elementsBufferSize = 20;
+    int charArrayBufferSize = 20;
 
-   //inicializace
     char c = 0;
     int j = 0;
-    set->elements = (char **)malloc(100 * sizeof(char *));
-    set->elements[0] = (char *)malloc(100 * sizeof(char));
+    set->elements = (char **)malloc(elementsBufferSize * sizeof(char *));
+    set->elements[0] = (char *)malloc(charArrayBufferSize * sizeof(char));
 
-    //nacita znaky dokud nenarazi na konec radku
-    for (int i = 0; (c = fgetc(file)) != '\n'; i++)
+    //pokud se nepodvedla alokace
+    if (set->elements[0] == NULL || set->elements == NULL)
     {
+        return -1;
+    }
+    //nacita znaky dokud nenarazi na konec radku
+    int i = 0;
+    for (; (c = fgetc(file)) != '\n'; i++)
+    {
+        //pokud je treba nacist vice znaku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
+        if (i >= charArrayBufferSize)
+        {
+            charArrayBufferSize += charArrayBufferSize;
+            set->elements[j] = (char *)realloc(set->elements[j], charArrayBufferSize * sizeof(char));
+        }
         //ukonci se pokud je na konci souboru
         if (c == EOF)
         {
@@ -44,10 +62,23 @@ void loadSet(FILE *file, Set *set)
         {
             //ukonci retezec 0
             set->elements[j][i] = 0;
-            //alokace místa pro další prvek
+
             j++;
+            //pokud je treba nacist vice prvku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
+            if (j >= elementsBufferSize)
+            {
+                elementsBufferSize += elementsBufferSize;
+                set->elements = (char **)realloc(set->elements, elementsBufferSize * sizeof(char *));
+            }
+            //pocet prvku je o 1 vetsi jak index
             set->count = j + 1;
-            set->elements[j] = (char *)malloc(100 * sizeof(char));
+            //alokace místa pro další prvek
+            set->elements[j] = (char *)malloc(charArrayBufferSize * sizeof(char));
+            //pokud se nepodvedla alokace
+            if (set->elements[j] == NULL)
+            {
+                return -1;
+            }
             //vynulovani i (-1 aby po inkrementaci bylo 0)
             i = -1;
             continue;
@@ -55,8 +86,14 @@ void loadSet(FILE *file, Set *set)
         set->elements[j][i] = c;
     }
 
-
-    return;
+    //pokud neni misto na null na konci stringu, tak se zvetsi o 1
+    if (i >= charArrayBufferSize)
+    {
+        set->elements[j] = (char *)realloc(set->elements[j], (charArrayBufferSize + 1) * sizeof(char));
+    }
+    //da 0 na konci stringu
+    set->elements[j][i] = 0;
+    return 0;
 }
 
 /**
@@ -71,7 +108,7 @@ void printData(Data data)
     for (int j = 0; j < data.universum->count; j++)
     {
 
-        printf("%s",data.universum->elements[j]);
+        printf("%s", data.universum->elements[j]);
 
         printf(" ");
     }
@@ -82,7 +119,7 @@ void printData(Data data)
         for (int j = 0; j < data.sets[i]->count; j++)
         {
 
-            printf("%s",data.sets[i]->elements[j]);
+            printf("%s", data.sets[i]->elements[j]);
 
             printf(" ");
         }
@@ -93,7 +130,7 @@ void printData(Data data)
 }
 
 /**
- * @brief Nacte data ze souboru, a vrati je ve forme structu data (omezeno jen na 100 setu TODO:nekonecno setu)
+ * @brief Nacte data ze souboru, a vrati je ve forme structu data
  *
  * @param file cesta k souboru
  * @return Data
@@ -103,12 +140,20 @@ Data Load(char file[])
     //inicializace
     Data data;
     data.setsCout = 0;
+    data.err = false;
     FILE *fp = fopen(file, "r");
     char c = 0;
-    data.sets = (Set **)malloc(100 * sizeof(Set *));
+    int dataSetBufferSize = 5;
+
+    data.sets = (Set **)malloc(dataSetBufferSize * sizeof(Set *));
     data.universum = (Set *)malloc(sizeof(Set));
     int line = 0;
 
+    if (data.sets == NULL || data.universum == NULL)
+    {
+        data.err = true;
+        return data;
+    }
     //nacitani prvniho znaku na kazdym radku
     while ((c = fgetc(fp)) != EOF)
     {
@@ -119,7 +164,19 @@ Data Load(char file[])
             loadSet(fp, data.universum);
             break;
         case 'S':
+            //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
+            if (data.setsCout >= dataSetBufferSize)
+            {
+                dataSetBufferSize += dataSetBufferSize;
+                data.sets = (Set **)realloc(data.sets, dataSetBufferSize * sizeof(Set *));
+            }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
+            //pokud se alkoce nepoved, vrati data s err
+            if (data.sets[data.setsCout] == NULL)
+            {
+                data.err = true;
+                return data;
+            }
             loadSet(fp, data.sets[data.setsCout]);
             data.sets[data.setsCout]->id = line;
             data.setsCout++;
@@ -131,14 +188,15 @@ Data Load(char file[])
         }
         line++;
     }
-    printData(data);
+
     return data;
 }
-
 
 int main(void)
 {
 
-    Load("test.txt");
+   printData( Load("test.txt"));
+
+    //TODO: dopsat free na DATA
     return 0;
 }
