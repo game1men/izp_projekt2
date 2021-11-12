@@ -24,27 +24,33 @@ typedef struct
 void loadSet(FILE *file, Set *set)
 {
 
-    set->elements = (char **)malloc(100 * sizeof(char *));
+   //inicializace
     char c = 0;
     int j = 0;
+    set->elements = (char **)malloc(100 * sizeof(char *));
     set->elements[0] = (char *)malloc(100 * sizeof(char));
 
+    //nacita znaky dokud nenarazi na konec radku
     for (int i = 0; (c = fgetc(file)) != '\n'; i++)
     {
+        //ukonci se pokud je na konci souboru
         if (c == EOF)
         {
             break;
         }
+        //rozdeli jednotlive prvky podle mezer (TODO: detekce vice mezer za sebou)
         if (c == ' ')
         {
+            //ukonci retezec 0
             set->elements[j][i] = 0;
+            //alokace místa pro další prvek
             j++;
-            i = -1;
             set->count = j + 1;
             set->elements[j] = (char *)malloc(100 * sizeof(char));
+            //vynulovani i (-1 aby po inkrementaci bylo 0)
+            i = -1;
             continue;
         }
-
         set->elements[j][i] = c;
     }
 
@@ -85,7 +91,7 @@ void printData(Data data)
 }
 
 /**
- * @brief Nacte data ze souboru, a vrati je ve forme structu data
+ * @brief Nacte data ze souboru, a vrati je ve forme structu data (omezeno jen na 100 setu TODO:nekonecno setu)
  *
  * @param file cesta k souboru
  * @return Data
@@ -120,8 +126,6 @@ Data Load(char file[])
             break;
         }
     }
-    //printing for debug ----------------------- TODO: remove
-
     printData(data);
     return data;
 }
