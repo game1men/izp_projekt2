@@ -59,6 +59,19 @@ void loadSet(FILE *file, Set *set)
     return;
 }
 
+void printSet(Set set)
+{
+    printf("S ");
+    for (int j = 0; j < set.count; j++)
+    {
+
+        printf("%s", set.elements[j]);
+
+        printf(" ");
+    }
+}
+
+
 /**
  * @brief prints all in Data struct
  *
@@ -68,6 +81,9 @@ void printData(Data data)
 {
 
     printf("\n universum:\n\n");
+
+    printSet(*data.universum);
+
     for (int j = 0; j < data.universum->count; j++)
     {
 
@@ -75,22 +91,17 @@ void printData(Data data)
 
         printf(" ");
     }
-    printf("\n sets: \n\n ");
+    printf("\n\n sets: \n\n");
     for (int i = 0; i < data.setsCout; i++)
     {
         printf("%d: ", data.sets[i]->id);
-        for (int j = 0; j < data.sets[i]->count; j++)
-        {
-
-            printf("%s",data.sets[i]->elements[j]);
-
-            printf(" ");
-        }
+        printSet(*data.sets[i]);
         printf("\n");
     }
 
     printf("\n");
 }
+
 
 /**
  * @brief Nacte data ze souboru, a vrati je ve forme structu data (omezeno jen na 100 setu TODO:nekonecno setu)
