@@ -9,5 +9,7 @@ valgrind: setcal
 
 s: setcal.c
 	gcc -std=c99 -Wall -Wextra setcal.c -o setcal
-check:
-	echo "test"
+check: setcal
+	(cd tests-izp-projekt-2 && python3 test.py ../setcal)
+
+
