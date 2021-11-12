@@ -29,18 +29,30 @@ typedef struct
 int loadSet(FILE *file, Set *set)
 {
 
+    int elementsBufferSize = 20;
+    int charArrayBufferSize = 3;
+    int elementsBufferMultiplier=2;
+    int charArrayBufferMultiplier=2;
    //inicializace
     char c = 0;
     int j = 0;
-    set->elements = (char **)malloc(100 * sizeof(char *));
-    set->elements[0] = (char *)malloc(100 * sizeof(char));
+    set->elements = (char **)malloc(elementsBufferSize * sizeof(char *));
+    set->elements[0] = (char *)malloc(charArrayBufferSize * sizeof(char));
 
     if(set->elements[0] == NULL || set->elements == NULL){
         return -1;
     }
     //nacita znaky dokud nenarazi na konec radku
-    for (int i = 0; (c = fgetc(file)) != '\n'; i++)
+    int i = 0;
+    for (; (c = fgetc(file)) != '\n'; i++)
     {
+
+        if (i>=charArrayBufferSize)
+        {
+            charArrayBufferSize *=charArrayBufferMultiplier;
+           set->elements[j]  = (char *)realloc(set->elements[j],charArrayBufferSize * sizeof(char));
+            charArrayBufferMultiplier++;
+        }
         //ukonci se pokud je na konci souboru
         if (c == EOF)
         {
@@ -53,8 +65,14 @@ int loadSet(FILE *file, Set *set)
             set->elements[j][i] = 0;
             //alokace místa pro další prvek
             j++;
-            set->count = j + 1;
-            set->elements[j] = (char *)malloc(100 * sizeof(char));
+
+            if (j>=elementsBufferSize)
+            {    elementsBufferSize *=  elementsBufferMultiplier;
+                set->elements = (char **)realloc(  set->elements,elementsBufferSize * sizeof(char *));
+            elementsBufferMultiplier++;
+            }
+            set->count = j+1;
+            set->elements[j] = (char *)malloc(charArrayBufferSize * sizeof(char));
              if( set->elements[j] == NULL){
                     return -1;
               }
@@ -66,7 +84,15 @@ int loadSet(FILE *file, Set *set)
     }
 
 
-    return;
+
+        if (i>=charArrayBufferSize)
+        {
+            charArrayBufferSize *=charArrayBufferMultiplier;
+           set->elements[j]  = (char *)realloc(set->elements[j],charArrayBufferSize * sizeof(char));
+            charArrayBufferMultiplier++;
+        }
+        set->elements[j][i] = 0;
+    return 0;
 }
 
 /**
@@ -113,7 +139,7 @@ Data Load(char file[])
     //inicializace
     Data data;
     data.setsCout = 0;
-    data.err == false;
+    data.err = false;
     FILE *fp = fopen(file, "r");
     char c = 0;
     data.sets = (Set **)malloc(100 * sizeof(Set *));
@@ -121,7 +147,7 @@ Data Load(char file[])
     int line = 0;
 
     if(data.sets == NULL || data.universum == NULL ){
-        data.err == true;
+        data.err = true;
         return data;
     }
     //nacitani prvniho znaku na kazdym radku
@@ -136,7 +162,7 @@ Data Load(char file[])
         case 'S':
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
             if(data.sets[data.setsCout] == NULL){
-                data.err == true;
+                data.err = true;
                  return data;
             }
             loadSet(fp, data.sets[data.setsCout]);
