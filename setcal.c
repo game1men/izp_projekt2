@@ -14,6 +14,7 @@ typedef struct
     Set **sets;
     int setsCout;
     Set *universum;
+    bool err;
 } Data;
 
 /**
@@ -21,8 +22,11 @@ typedef struct
  *
  * @param file ukazatel na soubor
  * @param set
+ * @return int
+ *      @retval 0 vporadku
+ *      @retval -1 chyba
  */
-void loadSet(FILE *file, Set *set)
+int loadSet(FILE *file, Set *set)
 {
 
    //inicializace
@@ -31,6 +35,9 @@ void loadSet(FILE *file, Set *set)
     set->elements = (char **)malloc(100 * sizeof(char *));
     set->elements[0] = (char *)malloc(100 * sizeof(char));
 
+    if(set->elements[0] == NULL || set->elements == NULL){
+        return -1;
+    }
     //nacita znaky dokud nenarazi na konec radku
     for (int i = 0; (c = fgetc(file)) != '\n'; i++)
     {
@@ -48,6 +55,9 @@ void loadSet(FILE *file, Set *set)
             j++;
             set->count = j + 1;
             set->elements[j] = (char *)malloc(100 * sizeof(char));
+             if( set->elements[j] == NULL){
+                    return -1;
+              }
             //vynulovani i (-1 aby po inkrementaci bylo 0)
             i = -1;
             continue;
@@ -102,12 +112,17 @@ Data Load(char file[])
     //inicializace
     Data data;
     data.setsCout = 0;
+    data.err == false;
     FILE *fp = fopen(file, "r");
     char c = 0;
     data.sets = (Set **)malloc(100 * sizeof(Set *));
     data.universum = (Set *)malloc(sizeof(Set));
     int line = 0;
 
+    if(data.sets == NULL || data.universum == NULL ){
+        data.err == true;
+        return data;
+    }
     //nacitani prvniho znaku na kazdym radku
     while ((c = fgetc(fp)) != EOF)
     {
@@ -119,6 +134,10 @@ Data Load(char file[])
             break;
         case 'S':
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
+            if(data.sets[data.setsCout] == NULL){
+                data.err == true;
+                 return data;
+            }
             loadSet(fp, data.sets[data.setsCout]);
             data.sets[data.setsCout]->id = line;
             data.setsCout++;
@@ -138,5 +157,7 @@ int main(void)
 {
 
     Load("test.txt");
+
+    //TODO: dopsat free na DATA
     return 0;
 }
