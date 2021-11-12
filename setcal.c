@@ -30,7 +30,7 @@ void loadSet(FILE *file, Set *set){
             set->elements[j][i] = 0;
              j++;
              i=-1;
-             set->count = j;
+             set->count = j+1;
             set->elements[j] = (char*)malloc(100*sizeof(char));
             continue;
         }
@@ -88,9 +88,9 @@ Data Load(char file[]){
     }
 //printing for debug
   printf("\n");
-    for(int i =0;i<=data.setsCout; i++){
+    for(int i =0;i<data.setsCout; i++){
 
-         for(int j =0;j<=data.sets[i]->count; j++){
+         for(int j =0;j<data.sets[i]->count; j++){
 
 
                             printf(data.sets[i]->elements[j]);
@@ -102,7 +102,7 @@ Data Load(char file[]){
 
     }
  printf("\n universum\n ");
-        for(int j =0;j<=data.universum->count; j++){
+        for(int j =0;j<data.universum->count; j++){
 
 
                             printf(data.universum->elements[j]);
