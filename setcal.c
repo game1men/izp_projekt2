@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-
 typedef struct
 {
     char **elements;
@@ -190,14 +189,13 @@ int loadSet(FILE *file, Set *set)
  */
 void printRelation(Relation relation)
 {
-    printf("R ");
+    printf("R");
 
     for (int j = 0; j < relation.count; j++)
     {
 
-        printf("(%s ", relation.elements[j][0]);
+        printf(" (%s ", relation.elements[j][0]);
         printf("%s)", relation.elements[j][1]);
-        printf(" ");
     }
 }
 /**
@@ -271,13 +269,10 @@ int loadRelation(FILE *file, Relation *relation)
  */
 void printSet(Set set)
 {
-    printf("S ");
+    printf("S");
     for (int j = 0; j < set.count; j++)
     {
-
-        printf("%s", set.elements[j]);
-
-        printf(" ");
+        printf(" %s", set.elements[j]);
     }
 }
 
