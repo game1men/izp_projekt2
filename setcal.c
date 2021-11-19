@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+
 
 typedef struct
 {
@@ -26,16 +28,78 @@ typedef struct
     bool err;
 } Data;
 
-/**
- * @brief nacte set do structu
- *
- * @param file ukazatel na soubor
- * @param set
- * @return int
- *      @retval 0 vporadku
- *      @retval -1 chyba
- */
 
+void printSet(Set set);
+
+void card(Set *set){
+
+    printf("%d\n",set->count);
+}
+
+void doCommand(FILE *file, Data data)
+{
+    //buffer 32 znaků bude určitě stačit
+    char cmd[32];
+    //fscanf umí rozdělit string podle mezer
+    fscanf(file,"%31s",cmd);
+
+    if(strcmp(cmd,"empty")==0){
+        //empty()
+        printf("empty\n");
+    }else if(strcmp(cmd,"card")==0){
+        int id;
+        fscanf(file,"%d",&id);
+        card(data.sets[id-1]);
+    }else if(strcmp(cmd,"complement")==0){
+        printf("complement\n");
+    }
+    else if(strcmp(cmd,"union")==0){
+        printf("union\n");
+    }
+    else if(strcmp(cmd,"intersect")==0){
+        printf("intersect\n");
+    }
+    else if(strcmp(cmd,"minus")==0){
+        printf("minus\n");
+    }
+    else if(strcmp(cmd,"subseteq")==0){
+        printf("subseteq\n");
+    }
+    else if(strcmp(cmd,"subset")==0){
+        printf("subset\n");
+    }
+    else if(strcmp(cmd,"reflexive")==0){
+        printf("reflexive\n");
+    }
+    else if(strcmp(cmd,"symmetric")==0){
+        printf("symmetric\n");
+    }
+    else if(strcmp(cmd,"antisymmetric")==0){
+        printf("antisymmetric\n");
+    }
+    else if(strcmp(cmd,"transitive")==0){
+        printf("transitive\n");
+    }
+    else if(strcmp(cmd,"function")==0){
+        printf("function\n");
+    }
+    else if(strcmp(cmd,"domain")==0){
+        printf("domain\n");
+    }
+    else if(strcmp(cmd,"codomain")==0){
+        printf("codomain\n");
+    }
+    else if(strcmp(cmd,"injective")==0){
+        printf("injective\n");
+    }
+    else if(strcmp(cmd,"surjective")==0){
+        printf("surjective\n");
+    }
+    else if(strcmp(cmd,"bijective")==0){
+        printf("bijective\n");
+    }
+    return;
+}
 /**
  * @brief nacte set do structu
  *
@@ -114,6 +178,8 @@ int loadSet(FILE *file, Set *set)
     }
     //da 0 na konci stringu
     set->elements[j][i] = 0;
+
+
     return 0;
 }
 
@@ -308,6 +374,8 @@ Data Load(char file[])
             }
             loadSet(fp, data.sets[data.setsCout]);
             data.sets[data.setsCout]->id = line;
+            printSet(*data.sets[data.setsCout]);
+            printf("\n");
             data.setsCout++;
             break;
         case 'R':
@@ -325,10 +393,13 @@ Data Load(char file[])
                 return data;
             }
             loadRelation(fp, data.relations[data.relationsCount]);
+            printRelation(*data.relations[data.relationsCount]);
+            printf("\n");
             data.relations[data.relationsCount]->id = line;
             data.relationsCount++;
             break;
-        case 'C': //TODO:
+        case 'C':
+            doCommand(fp, data);
             break;
         }
         line++;
@@ -339,8 +410,8 @@ Data Load(char file[])
 
 int main(void)
 {
-
-    printData(Load("test.txt"));
+    Load("test.txt");
+    //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
