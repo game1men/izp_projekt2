@@ -1,41 +1,137 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-//
+#include <string.h>
+
 typedef struct
 {
-    char **elements;
-    int count;
-    int id;
+    char **elements; //elementy setu
+    int count;       //pocet elementu setu
+    int id;          // radek na kterem je set
 } Set;
 
 typedef struct
 {
-    char ***elements;
-    int count;
-    int id;
+    char ***elements; //elementy relace
+    int count;        //pocet elementu relace
+    int id;           //radek na kterem je relace
 } Relation;
 
 typedef struct
 {
-    Set **sets;
-    int setsCout;
-    Relation **relations;
-    int relationsCount;
-    Set *universum;
-    bool err;
+    void **lines;         //reference na sety a relace podle radku
+    Set **sets;           // vsechny nactene sety
+    int setsCout;         //pocet setu
+    Relation **relations; // vsechny nactene relace
+    int relationsCount;   //pocet relaci
+    Set *universum;       // universum
+    bool err;             //nastal error
 } Data;
 
+void printSet(Set set);
+
 /**
- * @brief nacte set do structu
+ * @brief tiskne počet prvků v množině A (definované na řádku A).
+ *
+ * @param set
+ */
+void card(Set *set)
+{
+    printf("%d\n", set->count);
+}
+
+/**
+ * @brief Provede spravny prikaz, ktery je uveden na radku
  *
  * @param file ukazatel na soubor
- * @param set
- * @return int
- *      @retval 0 vporadku
- *      @retval -1 chyba
+ * @param data
  */
+void doCommand(FILE *file, Data data)
+{
 
+    //buffer 32 znaků bude určitě stačit, jelikoz predem zname vsechny mozne prikazi
+    char cmd[32];
+    //fscanf umí brát stringy podle mezer
+    fscanf(file, "%31s", cmd);
+
+    if (strcmp(cmd, "empty") == 0)
+    {
+        printf("empty\n");
+    }
+    else if (strcmp(cmd, "card") == 0)
+    {
+        int id = 0;
+        //nacte radek ktery by mel byt hned za prikazem TODO: osetrit chybejici radek, spatny format atd ...
+        fscanf(file, "%d", &id);
+        //id je potreba dat o 1 mensi protoze se indexuje od nuly
+        card((Set *)(data.lines[id - 1]));
+    }
+    else if (strcmp(cmd, "complement") == 0)
+    {
+        printf("complement\n");
+    }
+    else if (strcmp(cmd, "union") == 0)
+    {
+        printf("union\n");
+    }
+    else if (strcmp(cmd, "intersect") == 0)
+    {
+        printf("intersect\n");
+    }
+    else if (strcmp(cmd, "minus") == 0)
+    {
+        printf("minus\n");
+    }
+    else if (strcmp(cmd, "subseteq") == 0)
+    {
+        printf("subseteq\n");
+    }
+    else if (strcmp(cmd, "subset") == 0)
+    {
+        printf("subset\n");
+    }
+    else if (strcmp(cmd, "reflexive") == 0)
+    {
+        printf("reflexive\n");
+    }
+    else if (strcmp(cmd, "symmetric") == 0)
+    {
+        printf("symmetric\n");
+    }
+    else if (strcmp(cmd, "antisymmetric") == 0)
+    {
+        printf("antisymmetric\n");
+    }
+    else if (strcmp(cmd, "transitive") == 0)
+    {
+        printf("transitive\n");
+    }
+    else if (strcmp(cmd, "function") == 0)
+    {
+        printf("function\n");
+    }
+    else if (strcmp(cmd, "domain") == 0)
+    {
+        printf("domain\n");
+    }
+    else if (strcmp(cmd, "codomain") == 0)
+    {
+        printf("codomain\n");
+    }
+    else if (strcmp(cmd, "injective") == 0)
+    {
+        printf("injective\n");
+    }
+    else if (strcmp(cmd, "surjective") == 0)
+    {
+        printf("surjective\n");
+    }
+    else if (strcmp(cmd, "bijective") == 0)
+    {
+        printf("bijective\n");
+    }
+    return;
+}
 /**
  * @brief nacte set do structu
  *
@@ -47,14 +143,14 @@ typedef struct
  */
 int loadSet(FILE *file, Set *set)
 {
-    fgetc(file); //preskoci prvni mezeru
 
     //inicializace
     int elementsBufferSize = 20;
     int charArrayBufferSize = 20;
+    set->count = 0;
 
-    char c = 0;
     int j = 0;
+
     set->elements = (char **)malloc(elementsBufferSize * sizeof(char *));
     set->elements[0] = (char *)malloc(charArrayBufferSize * sizeof(char));
 
@@ -63,6 +159,14 @@ int loadSet(FILE *file, Set *set)
     {
         return -1;
     }
+
+    char c = 0;
+
+    if ((c = fgetc(file)) == '\n')
+    { //preskoci prvni mezeru, pokud je to konec radku, tak ukonci funkci
+        return 0;
+    }
+
     //nacita znaky dokud nenarazi na konec radku
     int i = 0;
     for (; (c = fgetc(file)) != '\n'; i++)
@@ -91,8 +195,7 @@ int loadSet(FILE *file, Set *set)
                 elementsBufferSize += elementsBufferSize;
                 set->elements = (char **)realloc(set->elements, elementsBufferSize * sizeof(char *));
             }
-            //pocet prvku je o 1 vetsi jak index
-            set->count = j + 1;
+
             //alokace místa pro další prvek
             set->elements[j] = (char *)malloc(charArrayBufferSize * sizeof(char));
             //pokud se nepodvedla alokace
@@ -114,6 +217,9 @@ int loadSet(FILE *file, Set *set)
     }
     //da 0 na konci stringu
     set->elements[j][i] = 0;
+    //pocet prvku je o 1 vetsi jak index
+    set->count = j + 1;
+
     return 0;
 }
 
@@ -152,7 +258,7 @@ int loadRelation(FILE *file, Relation *relation)
     loadSet(file, &set);
 
     //alokace
-    relation->elements = (char ***)malloc((set.count/2) * sizeof(char **));
+    relation->elements = (char ***)malloc((set.count / 2) * sizeof(char **));
     for (int i = 0; i < set.count / 2; i++)
     {
         relation->elements[i] = (char **)malloc(2 * sizeof(char *));
@@ -164,7 +270,7 @@ int loadRelation(FILE *file, Relation *relation)
         //i % 2 protoye potrebuju umistit prvky stridave do noveho pole, a %2 bude stridvae vracet 0 a 1
         relation->elements[f][(i % 2)] = (char *)malloc(32 * sizeof(char));
 
-        int o = 0;//aby bylo mozne preskocit pocatecni zavorku je potreba pouzit 2 promenne
+        int o = 0; //aby bylo mozne preskocit pocatecni zavorku je potreba pouzit 2 promenne
         for (int j = 0; set.elements[i][j] != 0; j++)
         {
 
@@ -173,13 +279,13 @@ int loadRelation(FILE *file, Relation *relation)
             {
                 relation->elements[f][(i % 2)][o + 1] = 0;
             }
-              //vymaze yavorku na konci
+            //vymaze yavorku na konci
             if (set.elements[i][j] == ')')
             {
                 relation->elements[f][(i % 2)][o] = 0;
                 break;
             }
-             //preskoci zavorku na zacatku
+            //preskoci zavorku na zacatku
             if (set.elements[i][j] == '(')
             {
                 continue; //preskoci ulozeni znaku a zaroven inkrementaci "o", takze "o" bude o 1 pozadu
@@ -205,6 +311,20 @@ int loadRelation(FILE *file, Relation *relation)
 void printSet(Set set)
 {
     printf("S");
+    for (int j = 0; j < set.count; j++)
+    {
+        printf(" %s", set.elements[j]);
+    }
+}
+
+/**
+ * @brief Tiskne universum
+ *
+ * @param set
+ */
+void printUniversum(Set set)
+{
+    printf("U");
     for (int j = 0; j < set.count; j++)
     {
         printf(" %s", set.elements[j]);
@@ -271,6 +391,7 @@ Data Load(char file[])
     int dataRealtionBufferSize = 5;
     data.sets = (Set **)malloc(dataSetBufferSize * sizeof(Set *));
     data.relations = (Relation **)malloc(dataSetBufferSize * sizeof(Relation *));
+    data.lines = (void **)malloc((dataSetBufferSize + dataSetBufferSize + 1) * sizeof(void *)); //+1 protoze obsahuje i universum
     data.universum = (Set *)malloc(sizeof(Set));
     int line = 0;
 
@@ -287,6 +408,9 @@ Data Load(char file[])
 
         case 'U':
             loadSet(fp, data.universum);
+            data.lines[line] = data.universum;
+            printUniversum(*data.universum);
+            printf("\n");
             break;
         case 'S':
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
@@ -294,6 +418,7 @@ Data Load(char file[])
             {
                 dataSetBufferSize += dataSetBufferSize;
                 data.sets = (Set **)realloc(data.sets, dataSetBufferSize * sizeof(Set *));
+                data.lines = (void **)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(void *));
             }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
             //pokud se alkoce nepoved, vrati data s err
@@ -304,6 +429,9 @@ Data Load(char file[])
             }
             loadSet(fp, data.sets[data.setsCout]);
             data.sets[data.setsCout]->id = line;
+            data.lines[line] = data.sets[data.setsCout];
+            printSet(*data.sets[data.setsCout]);
+            printf("\n");
             data.setsCout++;
             break;
         case 'R':
@@ -312,6 +440,7 @@ Data Load(char file[])
             {
                 dataRealtionBufferSize += dataRealtionBufferSize;
                 data.relations = (Relation **)realloc(data.relations, dataRealtionBufferSize * sizeof(Relation *));
+                data.lines = (void **)realloc(data.lines,(dataSetBufferSize+dataSetBufferSize+1) * sizeof(void*));
             }
             data.relations[data.relationsCount] = (Relation *)malloc(sizeof(Relation));
             //pokud se alkoce nepoved, vrati data s err
@@ -321,10 +450,14 @@ Data Load(char file[])
                 return data;
             }
             loadRelation(fp, data.relations[data.relationsCount]);
+            printRelation(*data.relations[data.relationsCount]);
+            printf("\n");
+            data.lines[line] = data.relations[data.relationsCount];
             data.relations[data.relationsCount]->id = line;
             data.relationsCount++;
             break;
-        case 'C': //TODO:
+        case 'C':
+            doCommand(fp, data);
             break;
         }
         line++;
@@ -333,10 +466,14 @@ Data Load(char file[])
     return data;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-
-    printData(Load("test.txt"));
+    if (argc > 1)
+    {
+        Load(argv[1]);
+    }
+    // Load("test.txt");
+    //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
