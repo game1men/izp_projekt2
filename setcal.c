@@ -522,7 +522,7 @@ int main(int argc, char **argv)
         Load(argv[1]);
     }
     // Load("test.txt");
-    printData(Load("test.txt"));
+    //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
