@@ -30,6 +30,51 @@ typedef struct
 
 void printSet(Set set);
 
+bool isInRelation(Relation *relation, char *first, char *second)
+{
+    for(int i = 0; i < relation->count; i++ )
+    {
+        if(strcmp(relation->elements[i][0], first) == 0)
+        {
+            if(strcmp(relation->elements[i][1], second) == 0)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void symmetric(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {        
+        }
+        else 
+        {
+            printf("false\n");
+            return;
+        }
+        
+    }
+    printf("true\n");
+}
+
+void antisymmetric(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {   
+            printf("false\n");
+            return;     
+        }       
+    }
+    printf("true\n");
+}
+
 /**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
@@ -96,11 +141,15 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "symmetric") == 0)
     {
-        printf("symmetric\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        symmetric((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "antisymmetric") == 0)
     {
-        printf("antisymmetric\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        antisymmetric((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "transitive") == 0)
     {
@@ -279,7 +328,7 @@ int loadRelation(FILE *file, Relation *relation)
             {
                 relation->elements[f][(i % 2)][o + 1] = 0;
             }
-            //vymaze yavorku na konci
+            //vymaze zavorku na konci
             if (set.elements[i][j] == ')')
             {
                 relation->elements[f][(i % 2)][o] = 0;
