@@ -86,6 +86,35 @@ void card(Set *set)
 }
 
 /**
+ * @brief vypisuje doplnok množiny A (vzhladom k univerzu)
+ * 
+ * @param set 
+ * @param universum 
+ */
+void complement(Set *set, Set *universum)
+{
+    printf("S");
+    bool complementE;
+    for(int i = 0; i < universum->count;  i++)
+    {
+        complementE = true;
+        for(int j = 0; j < set->count; j++)
+        {
+            if(strcmp(universum->elements[i],set->elements[j]) == 0){
+                complementE = false;
+                break;
+            }
+        }
+
+        if(complementE)
+        {
+            printf(" %s", universum->elements[i]);
+        }
+    }
+    printf("\n");
+}
+
+/**
  * @brief Provede spravny prikaz, ktery je uveden na radku
  *
  * @param file ukazatel na soubor
@@ -113,7 +142,10 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "complement") == 0)
     {
-        printf("complement\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        complement((Set *)(data.lines[id - 1]),(Set *)(data.universum));
+
     }
     else if (strcmp(cmd, "union") == 0)
     {
