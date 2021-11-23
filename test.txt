@@ -37,6 +37,11 @@ C complement 4
 C complement 5
 C complement 6
 C empty
+C union 3 6
+C union 4 6
+C intersect 1 2
+C intersect 5 6
+C empty
 C symmetric 18
 C symmetric 17
 C symmetric 16
