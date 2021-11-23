@@ -39,10 +39,10 @@ void printSet(Set set);
  */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
-    if(strcmp(first, second) == 0)
-    {
-        return false;
-    }
+    //if(strcmp(first, second) == 0)
+    //{
+    //    return false;
+    //}
     for(int i = 0; i < relation->count; i++ )
     {
         if(strcmp(relation->elements[i][0], first) == 0)
@@ -89,6 +89,10 @@ void antisymmetric(Relation *relation)
     {
         if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
         {   
+            if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
+            {
+                continue;
+            }
             printf("false\n");
             return;     
         }       
