@@ -86,6 +86,85 @@ void card(Set *set)
 }
 
 /**
+ * @brief vypisuje doplnok množiny A (vzhladom k univerzu)
+ * 
+ * @param set 
+ * @param universum 
+ */
+void complement(Set *set, Set *universum)
+{
+    printf("S");
+    bool complementE;
+    for(int i = 0; i < universum->count;  i++)
+    {
+        complementE = true;
+        for(int j = 0; j < set->count; j++)
+        {
+            if(strcmp(universum->elements[i],set->elements[j]) == 0){
+                complementE = false;
+                break;
+            }
+        }
+
+        if(complementE) printf(" %s", universum->elements[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * @brief vypisuje zjednotenie množín A a B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void unionAB(Set *setA, Set *setB)
+{
+    bool unionB;
+    printf("S");
+    for(int i = 0; i < setA->count; i++)
+    {
+        printf(" %s", setA->elements[i]);
+    }
+
+    for (int j = 0; j < setB->count; j++)
+    {
+        unionB = true;
+        for (int k = 0; k < setA->count; k++)
+        {
+            if(strcmp(setA->elements[k],setB->elements[j]) == 0){
+                unionB = false;
+                break;
+            }
+        }
+        if(unionB) printf(" %s", setB->elements[j]);
+    }
+    printf("\n");
+}
+
+/**
+ * @brief vypisuje prienik množín A a B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void intersect(Set *setA, Set *setB)
+{
+    printf("S");
+    for(int i = 0; i < setA->count; i++)
+    {
+        for(int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setA->elements[i], setB->elements[j]) == 0)
+            {
+                printf(" %s",setA->elements[i]);
+                break;
+            }
+        }
+    }
+    printf("\n");
+}
+
+/**
  * @brief Provede spravny prikaz, ktery je uveden na radku
  *
  * @param file ukazatel na soubor
@@ -113,15 +192,26 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "complement") == 0)
     {
-        printf("complement\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        complement((Set *)(data.lines[id - 1]), (Set *)(data.universum));
+
     }
     else if (strcmp(cmd, "union") == 0)
     {
-        printf("union\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        unionAB((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "intersect") == 0)
     {
-        printf("intersect\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        intersect((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "minus") == 0)
     {
