@@ -42,7 +42,7 @@ C complement 3
 C complement 4
 C complement 5
 C complement 6
-C empty
+C empty 4
 C union 3 6
 C union 4 6
 C intersect 1 2
