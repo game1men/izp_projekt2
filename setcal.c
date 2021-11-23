@@ -31,6 +31,76 @@ typedef struct
 void printSet(Set set);
 
 /**
+ * @brief true nebo false podle toho, zda se prvky rovnají
+ *
+ * @param relation 
+ * @param first prvni prvek relace (např. u (aa bb) to je aa)
+ * @param second druhy prvek relace 
+ */
+bool isInRelation(Relation *relation, char *first, char *second)
+{
+    //if(strcmp(first, second) == 0)
+    //{
+    //    return false;
+    //}
+    for(int i = 0; i < relation->count; i++ )
+    {
+        if(strcmp(relation->elements[i][0], first) == 0)
+        {
+            if(strcmp(relation->elements[i][1], second) == 0)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief true nebo false jestli je sym
+ *
+ * @param relation 
+ */
+void symmetric(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {        
+        }
+        else 
+        {
+            printf("false\n");
+            return;
+        }
+        
+    }
+    printf("true\n");
+}
+
+/**
+ * @brief true nebo false jestli je antisym
+ *
+ * @param relation 
+ */
+void antisymmetric(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {   
+            if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
+            {
+                continue;
+            }
+            printf("false\n");
+            return;     
+        }       
+    }
+    printf("true\n");
+}
+
+/**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
  * @param set
@@ -43,6 +113,85 @@ void empty(Set *set){
     bool result = true;
     if (set->count > 0)result = false;
     printf("%s", result ? "true\n" : "false\n");
+}
+
+/**
+ * @brief vypisuje doplnok množiny A (vzhladom k univerzu)
+ * 
+ * @param set 
+ * @param universum 
+ */
+void complement(Set *set, Set *universum)
+{
+    printf("S");
+    bool complementE;
+    for(int i = 0; i < universum->count;  i++)
+    {
+        complementE = true;
+        for(int j = 0; j < set->count; j++)
+        {
+            if(strcmp(universum->elements[i],set->elements[j]) == 0){
+                complementE = false;
+                break;
+            }
+        }
+
+        if(complementE) printf(" %s", universum->elements[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * @brief vypisuje zjednotenie množín A a B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void unionAB(Set *setA, Set *setB)
+{
+    bool unionB;
+    printf("S");
+    for(int i = 0; i < setA->count; i++)
+    {
+        printf(" %s", setA->elements[i]);
+    }
+
+    for (int j = 0; j < setB->count; j++)
+    {
+        unionB = true;
+        for (int k = 0; k < setA->count; k++)
+        {
+            if(strcmp(setA->elements[k],setB->elements[j]) == 0){
+                unionB = false;
+                break;
+            }
+        }
+        if(unionB) printf(" %s", setB->elements[j]);
+    }
+    printf("\n");
+}
+
+/**
+ * @brief vypisuje prienik množín A a B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void intersect(Set *setA, Set *setB)
+{
+    printf("S");
+    for(int i = 0; i < setA->count; i++)
+    {
+        for(int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setA->elements[i], setB->elements[j]) == 0)
+            {
+                printf(" %s",setA->elements[i]);
+                break;
+            }
+        }
+    }
+    printf("\n");
 }
 
 /**
@@ -82,15 +231,26 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "complement") == 0)
     {
-        printf("complement\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        complement((Set *)(data.lines[id - 1]), (Set *)(data.universum));
+
     }
     else if (strcmp(cmd, "union") == 0)
     {
-        printf("union\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        unionAB((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "intersect") == 0)
     {
-        printf("intersect\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        intersect((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "minus") == 0)
     {
@@ -110,11 +270,15 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "symmetric") == 0)
     {
-        printf("symmetric\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        symmetric((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "antisymmetric") == 0)
     {
-        printf("antisymmetric\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        antisymmetric((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "transitive") == 0)
     {
@@ -293,7 +457,7 @@ int loadRelation(FILE *file, Relation *relation)
             {
                 relation->elements[f][(i % 2)][o + 1] = 0;
             }
-            //vymaze yavorku na konci
+            //vymaze zavorku na konci
             if (set.elements[i][j] == ')')
             {
                 relation->elements[f][(i % 2)][o] = 0;

@@ -1,6 +1,8 @@
 U abc dfg lmf
 S abc dfg
 S abc dfg lmf
+S abc dfg
+S dfg abc
 S abc dfgsad
 S abc dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg
 S abc dfg
@@ -11,16 +13,22 @@ R (123 456) (789 abc) (def ghch)
 R (123 456) (def ghch) (ijkl mno)
 R (123 456) (789 abc) (def ghch) (ijkl mno)
 R (123 456) (789 abc) (def ghch) (ijkl mno)
+R (123 456) (789 abc) (def ghch) (ijkl mno) (456 123)
 R (123 456) (789 abc) (def ghch) (ijkl mno)
-R (123 456) (789 abc) (def ghch) (ijkl mno)
+R (123 456) (456 123)
+R (123 456) (456 122)
+R (a a) (c c) (c a)
+R (a a) (c c)
 C empty 3
+C equals 1 2
+C equals 1 3
+C equals 1 4
 C card 1
 C card 2
 C card 3
 C card 4
 C card 5
 C card 6
-C complement
 C card 3
 C card 2
 C card 5
@@ -28,4 +36,28 @@ C complement
 C complement
 C empty 4
 C symmetric
+C complement 1
+C complement 2
+C complement 3
+C complement 4
+C complement 5
+C complement 6
+C empty
+C union 3 6
+C union 4 6
+C intersect 1 2
+C intersect 5 6
+C empty 5
+C symmetric 16
+C symmetric 17
+C symmetric 18
+C symmetric 19
+C symmetric 20
+C symmetric 21
+C antisymmetric 16
+C antisymmetric 17
+C antisymmetric 18
+C antisymmetric 19
+C antisymmetric 20
+C antisymmetric 21
 
