@@ -30,8 +30,19 @@ typedef struct
 
 void printSet(Set set);
 
+/**
+ * @brief true nebo false podle toho, zda se prvky rovnají
+ *
+ * @param relation 
+ * @param first prvni prvek relace (např. u (aa bb) to je aa)
+ * @param second druhy prvek relace 
+ */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
+    //if(strcmp(first, second) == 0)
+    //{
+    //    return false;
+    //}
     for(int i = 0; i < relation->count; i++ )
     {
         if(strcmp(relation->elements[i][0], first) == 0)
@@ -45,6 +56,11 @@ bool isInRelation(Relation *relation, char *first, char *second)
     return false;
 }
 
+/**
+ * @brief true nebo false jestli je sym
+ *
+ * @param relation 
+ */
 void symmetric(Relation *relation)
 {
     for(int i = 0; i < relation->count; i++)
@@ -62,12 +78,21 @@ void symmetric(Relation *relation)
     printf("true\n");
 }
 
+/**
+ * @brief true nebo false jestli je antisym
+ *
+ * @param relation 
+ */
 void antisymmetric(Relation *relation)
 {
     for(int i = 0; i < relation->count; i++)
     {
         if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
         {   
+            if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
+            {
+                continue;
+            }
             printf("false\n");
             return;     
         }       
