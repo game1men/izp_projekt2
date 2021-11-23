@@ -27,12 +27,20 @@ C card 3
 C card 4
 C card 5
 C card 6
-C complement
 C card 3
 C card 2
 C card 5
-C complement
-C complement
+C complement 1
+C complement 2
+C complement 3
+C complement 4
+C complement 5
+C complement 6
+C empty
+C union 3 6
+C union 4 6
+C intersect 1 2
+C intersect 5 6
 C empty
 C symmetric 18
 C symmetric 17
