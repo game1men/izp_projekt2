@@ -39,6 +39,11 @@ void card(Set *set)
 {
     printf("%d\n", set->count);
 }
+void empty(Set *set){
+    bool result = true;
+    if (set->count > 0)result = false;
+    printf("%s", result ? "true\n" : "false\n");
+}
 
 /**
  * @brief Provede spravny prikaz, ktery je uveden na radku
@@ -51,12 +56,21 @@ void doCommand(FILE *file, Data data)
 
     //buffer 32 znaků bude určitě stačit, jelikoz predem zname vsechny mozne prikazi
     char cmd[32];
+    
+    //char B[10];
     //fscanf umí brát stringy podle mezer
+    
     fscanf(file, "%31s", cmd);
 
     if (strcmp(cmd, "empty") == 0)
-    {
-        printf("empty\n");
+    {  
+        int id = 0;
+        //nacte radek ktery by mel byt hned za prikazem TODO: osetrit chybejici radek, spatny format atd ...
+        fscanf(file, "%d", &id);
+        //id je potreba dat o 1 mensi protoze se indexuje od nuly
+        empty((Set *)(data.lines[id - 1]));
+         
+        
     }
     else if (strcmp(cmd, "card") == 0)
     {
@@ -472,8 +486,8 @@ int main(int argc, char **argv)
     {
         Load(argv[1]);
     }
-    // Load("test.txt");
-    //printData(Load("test.txt"));
+    //Load("test.txt");
+    printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
