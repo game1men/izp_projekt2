@@ -100,7 +100,8 @@ void complement(Set *set, Set *universum)
         complementE = true;
         for(int j = 0; j < set->count; j++)
         {
-            if(strcmp(universum->elements[i],set->elements[j]) == 0){
+            if(strcmp(universum->elements[i],set->elements[j]) == 0)
+            {
                 complementE = false;
                 break;
             }
@@ -131,7 +132,8 @@ void unionAB(Set *setA, Set *setB)
         unionB = true;
         for (int k = 0; k < setA->count; k++)
         {
-            if(strcmp(setA->elements[k],setB->elements[j]) == 0){
+            if(strcmp(setA->elements[k],setB->elements[j]) == 0)
+            {
                 unionB = false;
                 break;
             }
@@ -162,6 +164,91 @@ void intersect(Set *setA, Set *setB)
         }
     }
     printf("\n");
+}
+
+/**
+ * @brief vypise rozdiel množín A \ B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void minus(Set *setA, Set *setB)
+{
+    bool minusA;
+    printf("S");
+    for (int i = 0; i < setA->count; i++)
+    {
+        minusA = true;
+        for (int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            {
+                minusA = false;
+                break;
+            }
+        }
+        if(minusA) printf(" %s", setA->elements[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * @brief vypisuje true alebo false, ak množina A je podmnožinou množiny B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void subseteq(Set *setA, Set *setB)
+{
+    bool subseteqB;
+    for (int i = 0; i < setA->count; i++)
+    {
+        subseteqB = true;
+        for (int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            {
+                subseteqB = false;
+                break;
+            }
+        }
+        if(subseteqB){
+            printf("false\n");
+            return;
+        } 
+    }
+    printf("true\n");
+}
+
+/**
+ * @brief vypisuje true alebo false, ak je množina A vlastnou podmnožinou množiny B
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void subset(Set *setA, Set *setB)
+{
+    bool subsetB;
+    int countB = 0;
+    for (int i = 0; i < setA->count; i++)
+    {
+        subsetB = true;
+        for (int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            {
+                subsetB = false;
+                countB++;
+                break;
+            }
+        }
+        if(subsetB){
+            printf("false\n");
+            return;
+        } 
+    }
+    if(setB->count != countB) printf("true\n");
+    else printf("false\n");
 }
 
 /**
@@ -201,7 +288,7 @@ void doCommand(FILE *file, Data data)
     {
         int idA = 0;
         int idB = 0;
-        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idA); 
         fscanf(file, "%d", &idB);
         unionAB((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
@@ -215,15 +302,27 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "minus") == 0)
     {
-        printf("minus\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        minus((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "subseteq") == 0)
     {
-        printf("subseteq\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        subseteq((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "subset") == 0)
     {
-        printf("subset\n");
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        subset((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "reflexive") == 0)
     {
