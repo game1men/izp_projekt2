@@ -17,9 +17,23 @@ typedef struct
     int id;           //radek na kterem je relace
 } Relation;
 
+typedef enum
+{
+    NONE,
+    RELATION,
+    SET,
+    UNIVERSUM,
+} TypeOfLine;
+
 typedef struct
 {
-    void **lines;         //reference na sety a relace podle radku
+    void *line;
+    TypeOfLine typeOfLine;
+} Line;
+
+typedef struct
+{
+    Line *lines;          //reference na sety a relace podle radku
     Set **sets;           // vsechny nactene sety
     int setsCout;         //pocet setu
     Relation **relations; // vsechny nactene relace
@@ -33,9 +47,9 @@ void printSet(Set set);
 /**
  * @brief true nebo false podle toho, zda se prvky rovnají
  *
- * @param relation 
+ * @param relation
  * @param first prvni prvek relace (např. u (aa bb) to je aa)
- * @param second druhy prvek relace 
+ * @param second druhy prvek relace
  */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
@@ -43,11 +57,11 @@ bool isInRelation(Relation *relation, char *first, char *second)
     //{
     //    return false;
     //}
-    for(int i = 0; i < relation->count; i++ )
+    for (int i = 0; i < relation->count; i++)
     {
-        if(strcmp(relation->elements[i][0], first) == 0)
+        if (strcmp(relation->elements[i][0], first) == 0)
         {
-            if(strcmp(relation->elements[i][1], second) == 0)
+            if (strcmp(relation->elements[i][1], second) == 0)
             {
                 return true;
             }
@@ -59,21 +73,20 @@ bool isInRelation(Relation *relation, char *first, char *second)
 /**
  * @brief true nebo false jestli je sym
  *
- * @param relation 
+ * @param relation
  */
 void symmetric(Relation *relation)
 {
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
-        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
-        {        
+        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {
         }
-        else 
+        else
         {
             printf("false\n");
             return;
         }
-        
     }
     printf("true\n");
 }
@@ -81,21 +94,21 @@ void symmetric(Relation *relation)
 /**
  * @brief true nebo false jestli je antisym
  *
- * @param relation 
+ * @param relation
  */
 void antisymmetric(Relation *relation)
 {
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
-        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
-        {   
-            if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
+        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        {
+            if (strcmp(relation->elements[i][1], relation->elements[i][0]) == 0)
             {
                 continue;
             }
             printf("false\n");
-            return;     
-        }       
+            return;
+        }
     }
     printf("true\n");
 }
@@ -112,42 +125,43 @@ void card(Set *set)
 
 /**
  * @brief vypisuje doplnok množiny A (vzhladom k univerzu)
- * 
- * @param set 
- * @param universum 
+ *
+ * @param set
+ * @param universum
  */
 void complement(Set *set, Set *universum)
 {
     printf("S");
     bool complementE;
-    for(int i = 0; i < universum->count;  i++)
+    for (int i = 0; i < universum->count; i++)
     {
         complementE = true;
-        for(int j = 0; j < set->count; j++)
+        for (int j = 0; j < set->count; j++)
         {
-            if(strcmp(universum->elements[i],set->elements[j]) == 0)
+            if (strcmp(universum->elements[i], set->elements[j]) == 0)
             {
                 complementE = false;
                 break;
             }
         }
 
-        if(complementE) printf(" %s", universum->elements[i]);
+        if (complementE)
+            printf(" %s", universum->elements[i]);
     }
     printf("\n");
 }
 
 /**
  * @brief vypisuje zjednotenie množín A a B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void unionAB(Set *setA, Set *setB)
 {
     bool unionB;
     printf("S");
-    for(int i = 0; i < setA->count; i++)
+    for (int i = 0; i < setA->count; i++)
     {
         printf(" %s", setA->elements[i]);
     }
@@ -157,33 +171,34 @@ void unionAB(Set *setA, Set *setB)
         unionB = true;
         for (int k = 0; k < setA->count; k++)
         {
-            if(strcmp(setA->elements[k],setB->elements[j]) == 0)
+            if (strcmp(setA->elements[k], setB->elements[j]) == 0)
             {
                 unionB = false;
                 break;
             }
         }
-        if(unionB) printf(" %s", setB->elements[j]);
+        if (unionB)
+            printf(" %s", setB->elements[j]);
     }
     printf("\n");
 }
 
 /**
  * @brief vypisuje prienik množín A a B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void intersect(Set *setA, Set *setB)
 {
     printf("S");
-    for(int i = 0; i < setA->count; i++)
+    for (int i = 0; i < setA->count; i++)
     {
-        for(int j = 0; j < setB->count; j++)
+        for (int j = 0; j < setB->count; j++)
         {
-            if(strcmp(setA->elements[i], setB->elements[j]) == 0)
+            if (strcmp(setA->elements[i], setB->elements[j]) == 0)
             {
-                printf(" %s",setA->elements[i]);
+                printf(" %s", setA->elements[i]);
                 break;
             }
         }
@@ -193,9 +208,9 @@ void intersect(Set *setA, Set *setB)
 
 /**
  * @brief vypise rozdiel množín A \ B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void minus(Set *setA, Set *setB)
 {
@@ -206,22 +221,23 @@ void minus(Set *setA, Set *setB)
         minusA = true;
         for (int j = 0; j < setB->count; j++)
         {
-            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            if (strcmp(setA->elements[i], setB->elements[j]) == 0)
             {
                 minusA = false;
                 break;
             }
         }
-        if(minusA) printf(" %s", setA->elements[i]);
+        if (minusA)
+            printf(" %s", setA->elements[i]);
     }
     printf("\n");
 }
 
 /**
  * @brief vypisuje true alebo false, ak množina A je podmnožinou množiny B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void subseteq(Set *setA, Set *setB)
 {
@@ -231,25 +247,26 @@ void subseteq(Set *setA, Set *setB)
         subseteqB = true;
         for (int j = 0; j < setB->count; j++)
         {
-            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            if (strcmp(setA->elements[i], setB->elements[j]) == 0)
             {
                 subseteqB = false;
                 break;
             }
         }
-        if(subseteqB){
+        if (subseteqB)
+        {
             printf("false\n");
             return;
-        } 
+        }
     }
     printf("true\n");
 }
 
 /**
  * @brief vypisuje true alebo false, ak je množina A vlastnou podmnožinou množiny B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void subset(Set *setA, Set *setB)
 {
@@ -260,20 +277,46 @@ void subset(Set *setA, Set *setB)
         subsetB = true;
         for (int j = 0; j < setB->count; j++)
         {
-            if(strcmp(setA->elements[i],setB->elements[j]) == 0)
+            if (strcmp(setA->elements[i], setB->elements[j]) == 0)
             {
                 subsetB = false;
                 countB++;
                 break;
             }
         }
-        if(subsetB){
+        if (subsetB)
+        {
             printf("false\n");
             return;
-        } 
+        }
     }
-    if(setB->count != countB) printf("true\n");
-    else printf("false\n");
+    if (setB->count != countB)
+        printf("true\n");
+    else
+        printf("false\n");
+}
+
+void getIds(FILE *file, int ids[3],int* parsed)
+{
+
+    //čte soubor dokud nenarazí na znak novyho řádku %[^\n]
+    // for(int x = 0; fscanf(file, "%[^\n]%d", &ids[x]) != EOF && x <3; x++);
+
+    char c[100];
+    int x = 0;
+    for (; (c[x] = fgetc(file)) != '\n'; x++)
+        {
+            if(x>=99){
+                break;
+            }
+        }
+    if(x<=1){
+        *parsed=0;
+        return;
+    }
+    *parsed = sscanf(c, "%d%d%d", &ids[0], &ids[1], &ids[2]);
+
+    return;
 }
 
 /**
@@ -287,111 +330,134 @@ void doCommand(FILE *file, Data data)
 
     //buffer 32 znaků bude určitě stačit, jelikoz predem zname vsechny mozne prikazi
     char cmd[32];
+
     //fscanf umí brát stringy podle mezer
     fscanf(file, "%31s", cmd);
+    int ids[3];
+    int parsed;
+    getIds(file, ids, &parsed);
 
-    if (strcmp(cmd, "empty") == 0)
-    {
-        printf("empty\n");
-    }
-    else if (strcmp(cmd, "card") == 0)
-    {
-        int id = 0;
-        //nacte radek ktery by mel byt hned za prikazem TODO: osetrit chybejici radek, spatny format atd ...
-        fscanf(file, "%d", &id);
-        //id je potreba dat o 1 mensi protoze se indexuje od nuly
-        card((Set *)(data.lines[id - 1]));
-    }
-    else if (strcmp(cmd, "complement") == 0)
-    {
-        int id = 0;
-        fscanf(file, "%d", &id);
-        complement((Set *)(data.lines[id - 1]), (Set *)(data.universum));
+    if(parsed != EOF){
+     TypeOfLine tol = data.lines[ids[0]-1].typeOfLine;
+        for(int x = 1; x<parsed; x++){
+            if(data.lines[ids[x]-1].typeOfLine != tol){
+                return; //TODO: return error
+            }
 
+        }
     }
-    else if (strcmp(cmd, "union") == 0)
+
+
+
+
+    if (data.lines[ids[0] - 1].typeOfLine == SET)
     {
-        int idA = 0;
-        int idB = 0;
-        fscanf(file, "%d", &idA); 
-        fscanf(file, "%d", &idB);
-        unionAB((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+
+        if (strcmp(cmd, "empty") == 0)
+        {
+            printf("empty\n");
+        }
+        else if (strcmp(cmd, "card") == 0)
+        {
+            int id = 0;
+            //nacte radek ktery by mel byt hned za prikazem TODO: osetrit chybejici radek, spatny format atd ...
+            //fscanf(file, "%d", &id);
+            //id je potreba dat o 1 mensi protoze se indexuje od nuly
+            card((Set *)(data.lines[ids[0] - 1].line));
+        }
+        else if (strcmp(cmd, "complement") == 0)
+        {
+            int id = 0;
+            //fscanf(file, "%d", &id);
+            complement((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
+        }
+        else if (strcmp(cmd, "union") == 0)
+        {
+            int idA = 0;
+            int idB = 0;
+            // fscanf(file, "%d", &idA);
+            // fscanf(file, "%d", &idB);
+            unionAB((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }
+        else if (strcmp(cmd, "intersect") == 0)
+        {
+            int idA = 0;
+            int idB = 0;
+            //  fscanf(file, "%d", &idA);
+            //    fscanf(file, "%d", &idB);
+            intersect((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }
+        else if (strcmp(cmd, "minus") == 0)
+        {
+            int idA = 0;
+            int idB = 0;
+            //    fscanf(file, "%d", &idA);
+            //  fscanf(file, "%d", &idB);
+            minus((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }
+        else if (strcmp(cmd, "subseteq") == 0)
+        {
+            int idA = 0;
+            int idB = 0;
+            //fscanf(file, "%d", &idA);
+            //fscanf(file, "%d", &idB);
+            subseteq((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }
+        else if (strcmp(cmd, "subset") == 0)
+        {
+            int idA = 0;
+            int idB = 0;
+            //  fscanf(file, "%d", &idA);
+            // fscanf(file, "%d", &idB);
+            subset((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }
     }
-    else if (strcmp(cmd, "intersect") == 0)
+    if (data.lines[ids[0] - 1].typeOfLine == RELATION)
     {
-        int idA = 0;
-        int idB = 0;
-        fscanf(file, "%d", &idA);
-        fscanf(file, "%d", &idB);
-        intersect((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
-    }
-    else if (strcmp(cmd, "minus") == 0)
-    {
-        int idA = 0;
-        int idB = 0;
-        fscanf(file, "%d", &idA);
-        fscanf(file, "%d", &idB);
-        minus((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
-    }
-    else if (strcmp(cmd, "subseteq") == 0)
-    {
-        int idA = 0;
-        int idB = 0;
-        fscanf(file, "%d", &idA);
-        fscanf(file, "%d", &idB);
-        subseteq((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
-    }
-    else if (strcmp(cmd, "subset") == 0)
-    {
-        int idA = 0;
-        int idB = 0;
-        fscanf(file, "%d", &idA);
-        fscanf(file, "%d", &idB);
-        subset((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
-    }
-    else if (strcmp(cmd, "reflexive") == 0)
-    {
-        printf("reflexive\n");
-    }
-    else if (strcmp(cmd, "symmetric") == 0)
-    {
-        int id = 0;
-        fscanf(file, "%d", &id);
-        symmetric((Relation *)(data.lines[id - 1]));
-    }
-    else if (strcmp(cmd, "antisymmetric") == 0)
-    {
-        int id = 0;
-        fscanf(file, "%d", &id);
-        antisymmetric((Relation *)(data.lines[id - 1]));
-    }
-    else if (strcmp(cmd, "transitive") == 0)
-    {
-        printf("transitive\n");
-    }
-    else if (strcmp(cmd, "function") == 0)
-    {
-        printf("function\n");
-    }
-    else if (strcmp(cmd, "domain") == 0)
-    {
-        printf("domain\n");
-    }
-    else if (strcmp(cmd, "codomain") == 0)
-    {
-        printf("codomain\n");
-    }
-    else if (strcmp(cmd, "injective") == 0)
-    {
-        printf("injective\n");
-    }
-    else if (strcmp(cmd, "surjective") == 0)
-    {
-        printf("surjective\n");
-    }
-    else if (strcmp(cmd, "bijective") == 0)
-    {
-        printf("bijective\n");
+        if (strcmp(cmd, "reflexive") == 0)
+        {
+            printf("reflexive\n");
+        }
+        else if (strcmp(cmd, "symmetric") == 0)
+        {
+            int id = 0;
+            //  fscanf(file, "%d", &id);
+            symmetric((Relation *)(data.lines[ids[0] - 1].line));
+        }
+        else if (strcmp(cmd, "antisymmetric") == 0)
+        {
+            int id = 0;
+            // fscanf(file, "%d", &id);
+            antisymmetric((Relation *)(data.lines[ids[0] - 1].line));
+        }
+        else if (strcmp(cmd, "transitive") == 0)
+        {
+            printf("transitive\n");
+        }
+        else if (strcmp(cmd, "function") == 0)
+        {
+            printf("function\n");
+        }
+        else if (strcmp(cmd, "domain") == 0)
+        {
+            printf("domain\n");
+        }
+        else if (strcmp(cmd, "codomain") == 0)
+        {
+            printf("codomain\n");
+        }
+        else if (strcmp(cmd, "injective") == 0)
+        {
+            printf("injective\n");
+        }
+        else if (strcmp(cmd, "surjective") == 0)
+        {
+            printf("surjective\n");
+        }
+        else if (strcmp(cmd, "bijective") == 0)
+        {
+            printf("bijective\n");
+        }
     }
     return;
 }
@@ -654,7 +720,7 @@ Data Load(char file[])
     int dataRealtionBufferSize = 5;
     data.sets = (Set **)malloc(dataSetBufferSize * sizeof(Set *));
     data.relations = (Relation **)malloc(dataSetBufferSize * sizeof(Relation *));
-    data.lines = (void **)malloc((dataSetBufferSize + dataSetBufferSize + 1) * sizeof(void *)); //+1 protoze obsahuje i universum
+    data.lines = (Line *)malloc((dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line)); //+1 protoze obsahuje i universum
     data.universum = (Set *)malloc(sizeof(Set));
     int line = 0;
 
@@ -666,12 +732,14 @@ Data Load(char file[])
     //nacitani prvniho znaku na kazdym radku
     while ((c = fgetc(fp)) != EOF)
     {
+        data.lines[line].typeOfLine = NONE;
         switch (c)
         {
 
         case 'U':
             loadSet(fp, data.universum);
-            data.lines[line] = data.universum;
+            data.lines[line].line = data.universum;
+            data.lines[line].typeOfLine = UNIVERSUM;
             printUniversum(*data.universum);
             printf("\n");
             break;
@@ -681,7 +749,7 @@ Data Load(char file[])
             {
                 dataSetBufferSize += dataSetBufferSize;
                 data.sets = (Set **)realloc(data.sets, dataSetBufferSize * sizeof(Set *));
-                data.lines = (void **)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(void *));
+                data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
             }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
             //pokud se alkoce nepoved, vrati data s err
@@ -692,7 +760,8 @@ Data Load(char file[])
             }
             loadSet(fp, data.sets[data.setsCout]);
             data.sets[data.setsCout]->id = line;
-            data.lines[line] = data.sets[data.setsCout];
+            data.lines[line].line = data.sets[data.setsCout];
+            data.lines[line].typeOfLine = SET;
             printSet(*data.sets[data.setsCout]);
             printf("\n");
             data.setsCout++;
@@ -703,7 +772,7 @@ Data Load(char file[])
             {
                 dataRealtionBufferSize += dataRealtionBufferSize;
                 data.relations = (Relation **)realloc(data.relations, dataRealtionBufferSize * sizeof(Relation *));
-                data.lines = (void **)realloc(data.lines,(dataSetBufferSize+dataSetBufferSize+1) * sizeof(void*));
+                data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
             }
             data.relations[data.relationsCount] = (Relation *)malloc(sizeof(Relation));
             //pokud se alkoce nepoved, vrati data s err
@@ -715,7 +784,8 @@ Data Load(char file[])
             loadRelation(fp, data.relations[data.relationsCount]);
             printRelation(*data.relations[data.relationsCount]);
             printf("\n");
-            data.lines[line] = data.relations[data.relationsCount];
+            data.lines[line].line = data.relations[data.relationsCount];
+            data.lines[line].typeOfLine = RELATION;
             data.relations[data.relationsCount]->id = line;
             data.relationsCount++;
             break;
