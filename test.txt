@@ -19,6 +19,10 @@ R (123 456) (456 123)
 R (123 456) (456 122)
 R (a a) (c c) (c a)
 R (a a) (c c)
+R (a c) (b c) (c a) (d a)
+R (a c) (b c) (c a) (d a) (a b)
+R (abc bca) (abc dca)
+R (abc bca) (bca dca) (dca abc)
 C empty 3
 C equals 1 2
 C equals 1 3
@@ -62,6 +66,13 @@ C antisymmetric 18
 C antisymmetric 19
 C antisymmetric 20
 C antisymmetric 21
+C function 19
+C function 20
+C function 21
+C function 22
+C function 23
+C function 24
+C function 25
 
 
 

@@ -77,7 +77,6 @@ void symmetric(Relation *relation)
     }
     printf("true\n");
 }
-
 /**
  * @brief true nebo false jestli je antisym
  *
@@ -98,6 +97,29 @@ void antisymmetric(Relation *relation)
         }       
     }
     printf("true\n");
+}
+
+void function(Relation *relation)
+{
+    int a;
+    for(int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            {
+                a++;
+            }
+            if(a > 1)
+            {
+                printf("false\n");
+                return;
+            }
+        }
+    }
+    printf("true\n");
+    return;
 }
 
 /**
@@ -371,7 +393,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "function") == 0)
     {
-        printf("function\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        function((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "domain") == 0)
     {
