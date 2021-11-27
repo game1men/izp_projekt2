@@ -99,6 +99,11 @@ void antisymmetric(Relation *relation)
     printf("true\n");
 }
 
+/**
+ * @brief true nebo false jestli se jedna o relaci funkce
+ *
+ * @param function 
+ */
 void function(Relation *relation)
 {
     int a;
