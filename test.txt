@@ -18,9 +18,11 @@ R (123 456) (789 abc) (def ghch) (ijkl mno)
 R (123 456) (456 123)
 R (123 456) (456 122)
 R (a a) (c c) (c a)
-R (abc bca) (abc dca)
-R (abc bca) (bca dca) (dca abc)
+R (a a) (c c)
 C empty 3
+C equals 1 2
+C equals 1 3
+C equals 1 4
 C card 1
 C card 2
 C card 3
@@ -59,9 +61,4 @@ C antisymmetric 17
 C antisymmetric 18
 C antisymmetric 19
 C antisymmetric 20
-S abc dfg
-C function 19
-C function 20
-C function 21
-C function 22
-C function 23
+C antisymmetric 21
