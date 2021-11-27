@@ -114,6 +114,31 @@ void reflexive(Relation *relation)
 }
 
 /**
+ * @brief true nebo false jestli je tranzitivni
+ *
+ * @param relation 
+ */
+void transitive(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][1], relation->elements[j][0]) == 0)
+            {
+                if(isInRelation(relation, relation->elements[i][0], relation->elements[j][1]) == false)
+                {
+                    printf("false\n");
+                    return;
+                }
+            }
+        }
+    }
+    printf("true\n");
+    return;
+}
+
+/**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
  * @param set
@@ -382,7 +407,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "transitive") == 0)
     {
-        printf("transitive\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        transitive((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "function") == 0)
     {
