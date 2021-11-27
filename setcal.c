@@ -341,6 +341,7 @@ void doCommand(FILE *file, Data data)
      TypeOfLine tol = data.lines[ids[0]-1].typeOfLine;
         for(int x = 1; x<parsed; x++){
             if(data.lines[ids[x]-1].typeOfLine != tol){
+                 fprintf(stderr,"Nelze provest prikaz mezi mnouzinou a relaci");
                 return; //TODO: return error
             }
 
@@ -458,6 +459,8 @@ void doCommand(FILE *file, Data data)
         {
             printf("bijective\n");
         }
+    }else{
+        fprintf(stderr,"Prikaz nelze provest na tomto radku");
     }
     return;
 }
