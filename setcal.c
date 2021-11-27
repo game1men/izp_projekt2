@@ -350,7 +350,7 @@ void doCommand(FILE *file, Data data)
 
 
 
-    if (data.lines[ids[0] - 1].typeOfLine == SET)
+    if (data.lines[ids[0] - 1].typeOfLine == SET || data.lines[ids[0] - 1].typeOfLine == UNIVERSUM)
     {
 
         if (strcmp(cmd, "empty") == 0)
