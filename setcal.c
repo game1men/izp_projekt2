@@ -39,10 +39,6 @@ void printSet(Set set);
  */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
-    //if(strcmp(first, second) == 0)
-    //{
-    //    return false;
-    //}
     for(int i = 0; i < relation->count; i++ )
     {
         if(strcmp(relation->elements[i][0], first) == 0)
@@ -131,6 +127,48 @@ void equals(Set *setA, Set *setB)
             printf("false\n");
             return;
         }
+          printf("true\n");
+    return;
+}
+
+void reflexive(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if( isInRelation(relation, relation->elements[i][1], relation->elements[i][1]) && 
+            isInRelation(relation, relation->elements[i][0], relation->elements[i][0]) == true)
+            {                
+            }
+        else
+        {
+            printf("false\n");
+            return;
+        }
+    }
+    printf("true\n");
+}
+
+/**
+ * @brief true nebo false jestli je tranzitivni
+ *
+ * @param relation 
+ */
+void transitive(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][1], relation->elements[j][0]) == 0)
+            {
+                if(isInRelation(relation, relation->elements[i][0], relation->elements[j][1]) == false)
+                {
+                    printf("false\n");
+                    return;
+                }
+            }
+        }
+
     }
     printf("true\n");
     return;
@@ -395,7 +433,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "reflexive") == 0)
     {
-        printf("reflexive\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        reflexive((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "symmetric") == 0)
     {
@@ -411,7 +451,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "transitive") == 0)
     {
-        printf("transitive\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        transitive((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "function") == 0)
     {
