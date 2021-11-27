@@ -62,6 +62,3 @@ C antisymmetric 18
 C antisymmetric 19
 C antisymmetric 20
 C antisymmetric 21
-
-
-
