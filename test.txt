@@ -20,9 +20,6 @@ R (123 456) (456 122)
 R (a a) (c c) (c a)
 R (a a) (c c)
 C empty 3
-C equals 1 2
-C equals 1 3
-C equals 1 4
 C card 1
 C card 2
 C card 3
@@ -62,6 +59,11 @@ C antisymmetric 18
 C antisymmetric 19
 C antisymmetric 20
 C antisymmetric 21
-
+C equals 2 2
+C equals 2 3
+C equals 2 4
+C equals 2 5
+C equals 2 7
+C equals 2 8
 
 
