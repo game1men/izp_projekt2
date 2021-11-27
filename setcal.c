@@ -127,7 +127,8 @@ void equals(Set *setA, Set *setB)
             printf("false\n");
             return;
         }
-          printf("true\n");
+    }
+    printf("true\n");
     return;
 }
 
