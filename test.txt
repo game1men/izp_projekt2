@@ -23,10 +23,15 @@ R (a c) (b c) (c a) (d a)
 R (a c) (b c) (c a) (d a) (a b)
 R (abc bca) (abc dca)
 R (abc bca) (bca dca) (dca abc)
+R (a a) (a b) (c c) (b c)
+R (a b) (b a) (a a) (c a) (c c) (a c) (b c) (b b) (c b)
+R (abc bca) (abc abc)
+R (a b) (b a) (a a) (c a) (c c) (a c) (b c) (b b)
+R (abc abc) (abc bca)
+R (bca bca) (abc bca) (abc abc)
+R (c a) (b a) (d a)
+R (c a) (b a) (d a) (a a) (c c) (b b) (d d)
 C empty 3
-C equals 1 2
-C equals 1 3
-C equals 1 4
 C card 1
 C card 2
 C card 3
@@ -73,6 +78,21 @@ C function 22
 C function 23
 C function 24
 C function 25
-
-
-
+C equals 2 2
+C equals 2 3
+C equals 2 4
+C equals 2 5
+C equals 2 7
+C equals 2 8
+C transitive 20
+C transitive 21
+C transitive 22
+C transitive 23
+C transitive 24
+C transitive 25
+C reflexive 20
+C reflexive 21
+C reflexive 22
+C reflexive 23
+C reflexive 24
+C reflexive 25
