@@ -39,10 +39,6 @@ void printSet(Set set);
  */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
-    //if(strcmp(first, second) == 0)
-    //{
-    //    return false;
-    //}
     for(int i = 0; i < relation->count; i++ )
     {
         if(strcmp(relation->elements[i][0], first) == 0)
@@ -96,6 +92,23 @@ void antisymmetric(Relation *relation)
             printf("false\n");
             return;     
         }       
+    }
+    printf("true\n");
+}
+
+void reflexive(Relation *relation)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if( isInRelation(relation, relation->elements[i][1], relation->elements[i][1]) && 
+            isInRelation(relation, relation->elements[i][0], relation->elements[i][0]) == true)
+            {                
+            }
+        else
+        {
+            printf("false\n");
+            return;
+        }
     }
     printf("true\n");
 }
@@ -376,7 +389,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "reflexive") == 0)
     {
-        printf("reflexive\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        reflexive((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "symmetric") == 0)
     {
