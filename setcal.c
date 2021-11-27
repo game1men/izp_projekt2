@@ -100,6 +100,42 @@ void antisymmetric(Relation *relation)
     printf("true\n");
 }
 
+
+/**
+ * @brief porovnava mnoziny jestli se rovnaji, a podle toho vypisuje true nebo false
+ * 
+ * @param setA 
+ * @param setB 
+ */
+void equals(Set *setA, Set *setB)
+{
+    if(setA->count != setB->count)
+    {
+        printf("false\n");
+        return;
+    }
+
+    bool isIn = false;
+    for(int i = 0; i < setA->count; i++)
+    {
+        isIn = false;
+        for(int j = 0; j < setB->count; j++)
+        {
+            if(strcmp(setB->elements[j],setA->elements[i]) == 0)
+            {
+                isIn = true;
+            }
+        }
+        if(isIn == false)
+        {
+            printf("false\n");
+            return;
+        }
+    }
+    printf("true\n");
+    return;
+}
+
 /**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
@@ -348,6 +384,14 @@ void doCommand(FILE *file, Data data)
         fscanf(file, "%d", &idA);
         fscanf(file, "%d", &idB);
         subset((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+    }
+    else if (strcmp(cmd, "equals") == 0)
+    {
+        int idA = 0;
+        int idB = 0;
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        equals((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "reflexive") == 0)
     {
@@ -736,7 +780,7 @@ int main(int argc, char **argv)
         Load(argv[1]);
     }
     // Load("test.txt");
-    //printData(Load("test.txt"));
+    printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
