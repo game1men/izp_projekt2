@@ -226,6 +226,118 @@ void transitive(Relation *relation)
 }
 
 /**
+ * @brief vraci bool podle toho, zda prvek patri do mnoziny
+ *
+ * @param rElement prvek relace
+ * @param set mnozina
+ */
+bool isInSet(char *rElemnt, Set *set)
+{
+    for (int i = 0; i < set->count; i++)
+    {
+        if (strcmp(rElemnt, set->elements[i]) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief tiskne true nebo false podle hodnotu parametru bol
+ *
+ * @param bol bool
+ */
+void boolPrint(bool bol)
+{
+    if (bol == true)
+    {
+        printf("true\n");
+        return;
+    }
+    else
+    {
+        printf("false\n");
+        return;
+    }
+}
+/**
+ * @brief zjišťuje jestli je relace injektivní a jestli její prvky patří do množin A a B, podle toho vrací bool
+ *
+ * @param relation
+ * @param setA
+ * @param setB
+ */
+bool injective(Relation *relation, Set *setA, Set *setB)
+{
+    for (int i = 0; i < relation->count; i++)
+    {
+        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        {
+            return false;
+        }
+    }
+
+    int a;
+    for (int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for (int j = 0; j < relation->count; j++)
+        {
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            {
+                a++;
+            }
+            if (a > 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * @brief zjišťuje jestli je relace surjektivni a jestli její prvky patří do množin A a B, podle toho vrací bool
+ *
+ * @param relation
+ * @param setA
+ * @param setB
+ */
+bool surjective(Relation *relation, Set *setA, Set *setB)
+{
+    for (int i = 0; i < relation->count; i++)
+    {
+        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        {
+            return false;
+        }
+    }
+
+    //podle soucasneho zadání platí surjektivita vždy, protože ji testujeme nad relací a ne nád množinami, jediné co nás zajímá je to, zda prvky patri do relace
+    //pozn. surjektivita = každý prvek z B má k soubě nějaké A, těch může mít i víc
+    //pozn. aby dávalo určení relace smysl, tak by v zadání muselo být napsané něco ve smyslu určete, zda relace R znázorňuje surjektivitu mnozin A a B
+
+    return true;
+}
+
+/**
+ * @brief zjišťuje jestli je relace bijektivni(surjektivni i injektivni) a jestli její prvky patří do množin A a B, podle toho vrací bool
+ *
+ * @param relation
+ * @param setA
+ * @param setB
+ */
+bool bijective(Relation *relation, Set *setA, Set *setB)
+{
+    if ((surjective(relation, setA, setB) && injective(relation, setA, setB)) == true)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
  * @param set
@@ -452,6 +564,7 @@ int doCommand(FILE *file, Data data)
     int parsed;
     getIds(file, ids, &parsed);
 
+
     if (ids[0] == -1)
     {
         fprintf(stderr, "Nebyly zadany relacy/mnoziny se kterymi se ma pracovat");
@@ -459,6 +572,7 @@ int doCommand(FILE *file, Data data)
     }
 
     if (parsed != EOF && ids[0] != -1)
+
     {
         TypeOfLine tol = data.lines[ids[0] - 1].typeOfLine;
         for (int x = 1; x < parsed; x++)
@@ -470,7 +584,9 @@ int doCommand(FILE *file, Data data)
             if (data.lines[ids[x] - 1].typeOfLine != tol)
             {
                 fprintf(stderr, "Nelze provest prikaz mezi mnouzinou a relaci");
+
                 return -1; //TODO: return error
+
             }
         }
     }
@@ -484,61 +600,34 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "card") == 0)
         {
-            int id = 0;
-            //nacte radek ktery by mel byt hned za prikazem TODO: osetrit chybejici radek, spatny format atd ...
-            //fscanf(file, "%d", &id);
-            //id je potreba dat o 1 mensi protoze se indexuje od nuly
             card((Set *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "complement") == 0)
         {
-            int id = 0;
-            //fscanf(file, "%d", &id);
             complement((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
         }
         else if (strcmp(cmd, "union") == 0)
         {
-            int idA = 0;
-            int idB = 0;
-            // fscanf(file, "%d", &idA);
-            // fscanf(file, "%d", &idB);
             unionAB((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "intersect") == 0)
         {
-            int idA = 0;
-            int idB = 0;
-            //  fscanf(file, "%d", &idA);
-            //    fscanf(file, "%d", &idB);
             intersect((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "minus") == 0)
         {
-            int idA = 0;
-            int idB = 0;
-            //    fscanf(file, "%d", &idA);
-            //  fscanf(file, "%d", &idB);
             minus((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "subseteq") == 0)
         {
-            int idA = 0;
-            int idB = 0;
-            //fscanf(file, "%d", &idA);
-            //fscanf(file, "%d", &idB);
             subseteq((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "subset") == 0)
         {
-            int idA = 0;
-            int idB = 0;
-            //  fscanf(file, "%d", &idA);
-            // fscanf(file, "%d", &idB);
             subset((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "equals") == 0)
         {
-
             equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }else{
             fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na mnozine");
@@ -553,26 +642,18 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "symmetric") == 0)
         {
-            int id = 0;
-            //  fscanf(file, "%d", &id);
             symmetric((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "antisymmetric") == 0)
         {
-            int id = 0;
-            // fscanf(file, "%d", &id);
             antisymmetric((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "transitive") == 0)
         {
-            int id = 0;
-            //fscanf(file, "%d", &id);
             transitive((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "function") == 0)
         {
-            int id = 0;
-            //  fscanf(file, "%d", &id);
             function((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "domain") == 0)
@@ -585,14 +666,19 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "injective") == 0)
         {
-            printf("injective\n");
+
+            bool a = injective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
+            boolPrint(a);
+        }
+        else if (strcmp(cmd, "surjective") == 0)
+        {
+            bool a = surjective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
+            boolPrint(a);
         }
         else if (strcmp(cmd, "bijective") == 0)
         {
-            printf("bijective\n");
-        }else{
-            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci");
-        return -1;
+            bool a = bijective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
+            boolPrint(a);
         }
     }
     else
@@ -959,7 +1045,7 @@ int main(int argc, char **argv)
     }
 
     // Load("test.txt");
-    //printData(Load("test.txt"));
+    //  printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return data.err;
