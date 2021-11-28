@@ -108,3 +108,11 @@ C injective 34 12 14
 C injective 35 12 14
 C injective 35 13 13
 C injective 35 13 11
+C surjective 35 13 11
+C surjective 35 13 13
+C surjective 24 11 11
+C surjective 24 11 13
+C bijective 24 11 11
+C bijective 25 11 14
+C bijective 25 11 12
+C bijective 35 13 13
