@@ -27,8 +27,8 @@ typedef enum
 
 typedef struct
 {
-    void *line;
-    TypeOfLine typeOfLine;
+    void *line;            //ukazatel na relaci/mnozinu ulozenou na danem radku
+    TypeOfLine typeOfLine; //udava jestli se jedna o mnozinu/relaci/univesum/...
 } Line;
 
 typedef struct
@@ -67,6 +67,11 @@ bool isInRelation(Relation *relation, char *first, char *second)
     return false;
 }
 
+/**
+ * @brief tiskne true nebo false podle toho, jestli je mnozina definovana na radku A prazdna nebo neprazdna.
+ *
+ * @param set
+ */
 void empty(Set *set)
 {
     bool result = true;
@@ -520,28 +525,35 @@ void subset(Set *setA, Set *setB)
         printf("false\n");
 }
 
+/**
+ * @brief Získá všehny id z daneho radku.
+ *
+ * @param file ukazatel na soubor
+ * @param ids bere pole ids, do ktereho ulozi ziskana id
+ * @param parsed pocet id, ktera byl nactena
+ */
 void getIds(FILE *file, int ids[3], int *parsed)
 {
 
-    //čte soubor dokud nenarazí na znak novyho řádku %[^\n]
-    // for(int x = 0; fscanf(file, "%[^\n]%d", &ids[x]) != EOF && x <3; x++);
-
-    char c[100] = {0};
+    char c[100] = {0}; //buffer ynaku
     int x = 0;
+    //cte radek, dokud nenarazi na konec radku
     for (; (c[x] = fgetc(file)) != '\n'; x++)
     {
+        //pokud je x > jak 100, tak ukonci cyklus
         if (x >= 99)
         {
             break;
         }
     }
+    //pokud je x <=1, tak nebyly nalezena zadna id
     if (x <= 1)
     {
         *parsed = 0;
         return;
     }
+    //pomoci sscanf ze ziskaneho stringu sezene veskera id.
     *parsed = sscanf(c, "%d%d%d", &ids[0], &ids[1], &ids[2]);
-
     return;
 }
 
@@ -550,6 +562,9 @@ void getIds(FILE *file, int ids[3], int *parsed)
  *
  * @param file ukazatel na soubor
  * @param data
+ * @return int
+ *  @retval -1 error
+ *  @retval 0 vse OK
  */
 int doCommand(FILE *file, Data data)
 {
@@ -559,38 +574,50 @@ int doCommand(FILE *file, Data data)
 
     //fscanf umí brát stringy podle mezer
     fscanf(file, "%31s", cmd);
+    //nastavime pole id do -1, aby se dalo poznat ktera id byla nalezena, a ktera ne (tam kde je -1 nebylo ulozeno zadne id)
     int ids[3] = {-1, -1, -1};
 
+    //ziskame veskera id
     int parsed;
     getIds(file, ids, &parsed);
 
-
+    //pokud nebyla zadana zadna id, tak vratime error.
     if (ids[0] == -1)
     {
         fprintf(stderr, "Nebyly zadany relacy/mnoziny se kterymi se ma pracovat");
         return -1;
     }
 
+    //zkontrolujeme jestli na mnozinovy prikazi jdou jenom mnoziny, a to stejny s relacema
     if (parsed != EOF && ids[0] != -1)
-
     {
+        //zjistime typ radku podle prvniho id
         TypeOfLine tol = data.lines[ids[0] - 1].typeOfLine;
         for (int x = 1; x < parsed; x++)
         {
+            //pokud nebyl id nacteno ukoncime cyklus
             if (ids[x] == -1)
             {
                 break;
             }
+            //pokud se typ radku podle predchoziho id nerovna typu nasledujiciho, tak vratime error
             if (data.lines[ids[x] - 1].typeOfLine != tol)
             {
+                //zkontrolujeme, jestli se nejedna o 3 vyjimky, ktere pracuji zaroven s mnozinami a relacemi
+                if (parsed >= 3)
+                {
+                    if (((strcmp(cmd, "injective") == 0) || (strcmp(cmd, "surjective") == 0) || (strcmp(cmd, "bijective") == 0)) && (data.lines[ids[0] - 1].typeOfLine = RELATION && data.lines[ids[1] - 1].typeOfLine == SET && data.lines[ids[2] - 1].typeOfLine == SET))
+                    {
+                        break;
+                    }
+                }
                 fprintf(stderr, "Nelze provest prikaz mezi mnouzinou a relaci");
-
-                return -1; //TODO: return error
-
+                return -1;
             }
         }
     }
 
+    //do mnozinovejch prikazu pustime jenom mnoziny
     if (data.lines[ids[0] - 1].typeOfLine == SET || data.lines[ids[0] - 1].typeOfLine == UNIVERSUM)
     {
 
@@ -629,12 +656,14 @@ int doCommand(FILE *file, Data data)
         else if (strcmp(cmd, "equals") == 0)
         {
             equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
-        }else{
+        }
+        else
+        {
             fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na mnozine");
-        return -1;
+            return -1;
         }
     }
-    else if (data.lines[ids[0] - 1].typeOfLine == RELATION)
+    else if (data.lines[ids[0] - 1].typeOfLine == RELATION)//do relacnich prikazu pustime jenom relace
     {
         if (strcmp(cmd, "reflexive") == 0)
         {
@@ -681,7 +710,7 @@ int doCommand(FILE *file, Data data)
             boolPrint(a);
         }
     }
-    else
+    else   //pokud se nejedna o prikaz na mnozine ani o prikaz na relaci, tak se jedna o chybu
     {
         fprintf(stderr, "Prikaz nelze provest na tomto radku");
         return -1;
@@ -943,7 +972,8 @@ Data Load(char file[])
     data.err = false;
     FILE *fp = fopen(file, "r");
 
-    if(fp == NULL){
+    if (fp == NULL)
+    {
         fprintf(stderr, "Chyba pri otevirani souboru.");
         data.err = 1;
         return data;
