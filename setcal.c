@@ -33,9 +33,9 @@ void printSet(Set set);
 /**
  * @brief true nebo false podle toho, zda se prvky rovnají
  *
- * @param relation 
+ * @param relation
  * @param first prvni prvek relace (např. u (aa bb) to je aa)
- * @param second druhy prvek relace 
+ * @param second druhy prvek relace
  */
 bool isInRelation(Relation *relation, char *first, char *second)
 {
@@ -55,45 +55,72 @@ bool isInRelation(Relation *relation, char *first, char *second)
 /**
  * @brief true nebo false jestli je sym
  *
- * @param relation 
+ * @param relation
  */
 void symmetric(Relation *relation)
 {
     for(int i = 0; i < relation->count; i++)
     {
         if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
-        {        
+        {
         }
-        else 
+        else
         {
             printf("false\n");
             return;
         }
-        
+
     }
     printf("true\n");
 }
-
 /**
  * @brief true nebo false jestli je antisym
  *
- * @param relation 
+ * @param relation
  */
 void antisymmetric(Relation *relation)
 {
     for(int i = 0; i < relation->count; i++)
     {
         if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
-        {   
+        {
             if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
             {
                 continue;
             }
             printf("false\n");
-            return;     
-        }       
+            return;
+        }
     }
     printf("true\n");
+}
+
+/**
+ * @brief true nebo false jestli se jedna o relaci funkce
+ *
+ * @param function
+ */
+void function(Relation *relation)
+{
+    int a;
+    for(int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            {
+                a++;
+            }
+            if(a > 1)
+            {
+                printf("false\n");
+                return;
+            }
+        }
+    }
+    printf("true\n");
+    return;
 }
 
 
@@ -302,9 +329,9 @@ void card(Set *set)
 
 /**
  * @brief vypisuje doplnok množiny A (vzhladom k univerzu)
- * 
- * @param set 
- * @param universum 
+ *
+ * @param set
+ * @param universum
  */
 void complement(Set *set, Set *universum)
 {
@@ -329,9 +356,9 @@ void complement(Set *set, Set *universum)
 
 /**
  * @brief vypisuje zjednotenie množín A a B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void unionAB(Set *setA, Set *setB)
 {
@@ -360,9 +387,9 @@ void unionAB(Set *setA, Set *setB)
 
 /**
  * @brief vypisuje prienik množín A a B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void intersect(Set *setA, Set *setB)
 {
@@ -383,9 +410,9 @@ void intersect(Set *setA, Set *setB)
 
 /**
  * @brief vypise rozdiel množín A \ B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void minus(Set *setA, Set *setB)
 {
@@ -409,9 +436,9 @@ void minus(Set *setA, Set *setB)
 
 /**
  * @brief vypisuje true alebo false, ak množina A je podmnožinou množiny B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void subseteq(Set *setA, Set *setB)
 {
@@ -430,16 +457,16 @@ void subseteq(Set *setA, Set *setB)
         if(subseteqB){
             printf("false\n");
             return;
-        } 
+        }
     }
     printf("true\n");
 }
 
 /**
  * @brief vypisuje true alebo false, ak je množina A vlastnou podmnožinou množiny B
- * 
- * @param setA 
- * @param setB 
+ *
+ * @param setA
+ * @param setB
  */
 void subset(Set *setA, Set *setB)
 {
@@ -460,7 +487,7 @@ void subset(Set *setA, Set *setB)
         if(subsetB){
             printf("false\n");
             return;
-        } 
+        }
     }
     if(setB->count != countB) printf("true\n");
     else printf("false\n");
@@ -503,7 +530,7 @@ void doCommand(FILE *file, Data data)
     {
         int idA = 0;
         int idB = 0;
-        fscanf(file, "%d", &idA); 
+        fscanf(file, "%d", &idA);
         fscanf(file, "%d", &idB);
         unionAB((Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
@@ -573,7 +600,9 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "function") == 0)
     {
-        printf("function\n");
+        int id = 0;
+        fscanf(file, "%d", &id);
+        function((Relation *)(data.lines[id - 1]));
     }
     else if (strcmp(cmd, "domain") == 0)
     {
@@ -873,8 +902,8 @@ Data Load(char file[])
     data.err = false;
     FILE *fp = fopen(file, "r");
     char c = 0;
-    int dataSetBufferSize = 5;
-    int dataRealtionBufferSize = 5;
+    int dataSetBufferSize = 50;
+    int dataRealtionBufferSize = 50;
     data.sets = (Set **)malloc(dataSetBufferSize * sizeof(Set *));
     data.relations = (Relation **)malloc(dataSetBufferSize * sizeof(Relation *));
     data.lines = (void **)malloc((dataSetBufferSize + dataSetBufferSize + 1) * sizeof(void *)); //+1 protoze obsahuje i universum
