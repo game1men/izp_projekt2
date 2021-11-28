@@ -175,6 +175,27 @@ void transitive(Relation *relation)
     return;
 }
 
+void injective(Relation *relation, Set *setA, Set *setB)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if( isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setA) &&
+            isInSet(relation->elements[i][1], setA) && isInSet(relation->elements[i][1], setA) == true)
+        {
+
+
+        }
+        else
+        {
+            printf("false\n");
+            return;
+        }
+    }
+    
+
+}
+
+
 /**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
@@ -470,7 +491,13 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "injective") == 0)
     {
-        printf("injective\n");
+        int idA = 0;
+        int idB = 0;
+        int id = 0;
+        fscanf(file, "%d", &id);
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        injective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
     }
     else if (strcmp(cmd, "surjective") == 0)
     {
