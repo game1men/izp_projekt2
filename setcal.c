@@ -175,24 +175,78 @@ void transitive(Relation *relation)
     return;
 }
 
-void injective(Relation *relation, Set *setA, Set *setB)
+/**
+ * @brief vraci bool podle toho, zda prvek patri do mnoziny
+ *
+ * @param rElement prvek relace
+ * @param set mnozina
+ */
+bool isInSet(char *rElemnt, Set *set)
+{
+    for(int i = 0; i < set->count; i++)
+    {
+        if(strcmp(rElemnt, set->elements[i]) == 0)
+        {
+            return true;
+        }
+
+    }
+    return false;
+}
+
+/**
+ * @brief tiskne true nebo false podle hodnotu parametru bol
+ *
+ * @param bol bool 
+ */
+void boolPrint(bool bol)
+{
+    if(bol == true)
+    {
+        printf("true\n");
+        return;
+    }
+    else
+    {
+        printf("false\n");
+        return;
+    }
+
+}
+/**
+ * @brief zjišťuje jestli je relace injektivní a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * 
+ * @param relation
+ * @param setA 
+ * @param setB 
+ */
+bool injective(Relation *relation, Set *setA, Set *setB)
 {
     for(int i = 0; i < relation->count; i++)
     {
-        if( isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setA) &&
-            isInSet(relation->elements[i][1], setA) && isInSet(relation->elements[i][1], setA) == true)
+        if( (isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
         {
-
-
-        }
-        else
-        {
-            printf("false\n");
-            return;
+            return false;
         }
     }
     
-
+    int a;
+    for(int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            {
+                a++;
+            }
+            if(a > 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -497,7 +551,8 @@ void doCommand(FILE *file, Data data)
         fscanf(file, "%d", &id);
         fscanf(file, "%d", &idA);
         fscanf(file, "%d", &idB);
-        injective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+        bool a = injective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+        boolPrint(a);
     }
     else if (strcmp(cmd, "surjective") == 0)
     {
@@ -850,7 +905,7 @@ int main(int argc, char **argv)
         Load(argv[1]);
     }
     // Load("test.txt");
-    //printData(Load("test.txt"));
+    printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;

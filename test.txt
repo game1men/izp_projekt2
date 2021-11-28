@@ -8,6 +8,10 @@ S abc dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf ab
 S abc dfg
 S abc dfg
 S abc dfg
+S a b c
+S a b
+S abc bca
+S a b c
 R (123 456) (789 abc)
 R (123 456) (789 abc) (def ghch)
 R (123 456) (def ghch) (ijkl mno)
@@ -27,6 +31,8 @@ R (abc abc) (abc bca)
 R (bca bca) (abc bca) (abc abc)
 R (c a) (b a) (d a)
 R (c a) (b a) (d a) (a a) (c c) (b b) (d d)
+R (a b) (c a)
+R (abc bca)
 C empty 3
 C card 1
 C card 2
@@ -85,3 +91,20 @@ C reflexive 22
 C reflexive 23
 C reflexive 24
 C reflexive 25
+C injective 34 12 14
+C injective 24 11 14
+C injective 24 11 12
+C injective 25 11 14
+C injective 25 11 12
+C injective 26 11 12
+C injective 26 11 11
+C injective 27 11 14
+C injective 27 11 11
+C injective 28 11 11
+C injective 28 14 14
+C injective 34 14 14
+C injective 34 12 14
+C injective 34 12 14
+C injective 35 12 14
+C injective 35 13 13
+C injective 35 13 11
