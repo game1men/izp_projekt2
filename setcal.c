@@ -54,7 +54,7 @@ void printSet(Set set);
 bool isInRelation(Relation *relation, char *first, char *second)
 {
 
-    for(int i = 0; i < relation->count; i++ )
+    for (int i = 0; i < relation->count; i++)
     {
         if (strcmp(relation->elements[i][0], first) == 0)
         {
@@ -67,6 +67,14 @@ bool isInRelation(Relation *relation, char *first, char *second)
     return false;
 }
 
+void empty(Set *set)
+{
+    bool result = true;
+    if (set->count > 0)
+        result = false;
+    printf("%s", result ? "true\n" : "false\n");
+}
+
 /**
  * @brief true nebo false jestli je sym
  *
@@ -77,7 +85,7 @@ void symmetric(Relation *relation)
     for (int i = 0; i < relation->count; i++)
     {
 
-        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
         {
         }
         else
@@ -85,8 +93,6 @@ void symmetric(Relation *relation)
             printf("false\n");
             return;
         }
-
-
     }
     printf("true\n");
 }
@@ -100,9 +106,9 @@ void antisymmetric(Relation *relation)
     for (int i = 0; i < relation->count; i++)
     {
 
-        if(isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
+        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][0]) == true)
         {
-            if(strcmp(relation->elements[i][1],relation->elements[i][0]) == 0)
+            if (strcmp(relation->elements[i][1], relation->elements[i][0]) == 0)
 
             {
                 continue;
@@ -110,7 +116,6 @@ void antisymmetric(Relation *relation)
             printf("false\n");
             return;
         }
-
     }
     printf("true\n");
 }
@@ -123,16 +128,16 @@ void antisymmetric(Relation *relation)
 void function(Relation *relation)
 {
     int a;
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
         a = 0;
-        for(int j = 0; j < relation->count; j++)
+        for (int j = 0; j < relation->count; j++)
         {
-            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
             {
                 a++;
             }
-            if(a > 1)
+            if (a > 1)
             {
                 printf("false\n");
                 return;
@@ -143,7 +148,6 @@ void function(Relation *relation)
     return;
 }
 
-
 /**
  * @brief porovnava mnoziny jestli se rovnaji, a podle toho vypisuje true nebo false
  *
@@ -152,24 +156,24 @@ void function(Relation *relation)
  */
 void equals(Set *setA, Set *setB)
 {
-    if(setA->count != setB->count)
+    if (setA->count != setB->count)
     {
         printf("false\n");
         return;
     }
 
     bool isIn = false;
-    for(int i = 0; i < setA->count; i++)
+    for (int i = 0; i < setA->count; i++)
     {
         isIn = false;
-        for(int j = 0; j < setB->count; j++)
+        for (int j = 0; j < setB->count; j++)
         {
-            if(strcmp(setB->elements[j],setA->elements[i]) == 0)
+            if (strcmp(setB->elements[j], setA->elements[i]) == 0)
             {
                 isIn = true;
             }
         }
-        if(isIn == false)
+        if (isIn == false)
         {
             printf("false\n");
             return;
@@ -181,18 +185,17 @@ void equals(Set *setA, Set *setB)
 
 void reflexive(Relation *relation)
 {
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
-        if( isInRelation(relation, relation->elements[i][1], relation->elements[i][1]) &&
+        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][1]) &&
             isInRelation(relation, relation->elements[i][0], relation->elements[i][0]) == true)
-            {
-            }
+        {
+        }
         else
         {
             printf("false\n");
             return;
         }
-
     }
     printf("true\n");
 }
@@ -204,20 +207,19 @@ void reflexive(Relation *relation)
  */
 void transitive(Relation *relation)
 {
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
-        for(int j = 0; j < relation->count; j++)
+        for (int j = 0; j < relation->count; j++)
         {
-            if(strcmp(relation->elements[i][1], relation->elements[j][0]) == 0)
+            if (strcmp(relation->elements[i][1], relation->elements[j][0]) == 0)
             {
-                if(isInRelation(relation, relation->elements[i][0], relation->elements[j][1]) == false)
+                if (isInRelation(relation, relation->elements[i][0], relation->elements[j][1]) == false)
                 {
                     printf("false\n");
                     return;
                 }
             }
         }
-
     }
     printf("true\n");
     return;
@@ -399,7 +401,6 @@ void subset(Set *setA, Set *setB)
             printf("false\n");
             return;
         }
-
     }
     if (setB->count != countB)
         printf("true\n");
@@ -407,24 +408,25 @@ void subset(Set *setA, Set *setB)
         printf("false\n");
 }
 
-void getIds(FILE *file, int ids[3],int* parsed)
+void getIds(FILE *file, int ids[3], int *parsed)
 {
 
     //čte soubor dokud nenarazí na znak novyho řádku %[^\n]
     // for(int x = 0; fscanf(file, "%[^\n]%d", &ids[x]) != EOF && x <3; x++);
 
-    char c[100];
+    char c[100] = {0};
     int x = 0;
     for (; (c[x] = fgetc(file)) != '\n'; x++)
+    {
+        if (x >= 99)
         {
-            if(x>=99){
-                break;
-            }
+            break;
         }
-    if(x<=1){
-        *parsed=0;
+    }
+    if (x <= 1)
+    {
+        *parsed = 0;
         return;
-
     }
     *parsed = sscanf(c, "%d%d%d", &ids[0], &ids[1], &ids[2]);
 
@@ -437,7 +439,7 @@ void getIds(FILE *file, int ids[3],int* parsed)
  * @param file ukazatel na soubor
  * @param data
  */
-void doCommand(FILE *file, Data data)
+int doCommand(FILE *file, Data data)
 {
 
     //buffer 32 znaků bude určitě stačit, jelikoz predem zname vsechny mozne prikazi
@@ -445,35 +447,40 @@ void doCommand(FILE *file, Data data)
 
     //fscanf umí brát stringy podle mezer
     fscanf(file, "%31s", cmd);
-    int ids[3] = {-1,-1,-1};
+    int ids[3] = {-1, -1, -1};
 
     int parsed;
     getIds(file, ids, &parsed);
 
-    if(parsed != EOF){
-     TypeOfLine tol = data.lines[ids[0]-1].typeOfLine;
-        for(int x = 1; x<parsed; x++){
-            if(ids[x] == -1){
-                break;
-            }
-            if(data.lines[ids[x]-1].typeOfLine != tol){
-                 fprintf(stderr,"Nelze provest prikaz mezi mnouzinou a relaci");
-                return; //TODO: return error
-            }
-
-        }
+    if (ids[0] == -1)
+    {
+        fprintf(stderr, "Nebyly zadany relacy/mnoziny se kterymi se ma pracovat");
+        return -1;
     }
 
-
-
-
+    if (parsed != EOF && ids[0] != -1)
+    {
+        TypeOfLine tol = data.lines[ids[0] - 1].typeOfLine;
+        for (int x = 1; x < parsed; x++)
+        {
+            if (ids[x] == -1)
+            {
+                break;
+            }
+            if (data.lines[ids[x] - 1].typeOfLine != tol)
+            {
+                fprintf(stderr, "Nelze provest prikaz mezi mnouzinou a relaci");
+                return -1; //TODO: return error
+            }
+        }
+    }
 
     if (data.lines[ids[0] - 1].typeOfLine == SET || data.lines[ids[0] - 1].typeOfLine == UNIVERSUM)
     {
 
         if (strcmp(cmd, "empty") == 0)
         {
-            printf("empty\n");
+            empty((Set *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "card") == 0)
         {
@@ -529,14 +536,16 @@ void doCommand(FILE *file, Data data)
             // fscanf(file, "%d", &idB);
             subset((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
-         else if (strcmp(cmd, "equals") == 0)
-    {
+        else if (strcmp(cmd, "equals") == 0)
+        {
 
-
-        equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+            equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
+        }else{
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na mnozine");
+        return -1;
+        }
     }
-    }
-    if (data.lines[ids[0] - 1].typeOfLine == RELATION)
+    else if (data.lines[ids[0] - 1].typeOfLine == RELATION)
     {
         if (strcmp(cmd, "reflexive") == 0)
         {
@@ -555,37 +564,43 @@ void doCommand(FILE *file, Data data)
             antisymmetric((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "transitive") == 0)
-    {
-        int id = 0;
-        //fscanf(file, "%d", &id);
-        transitive((Relation *)(data.lines[ids[0] - 1].line));
-    }
-    else if (strcmp(cmd, "function") == 0)
-    {
-        int id = 0;
-      //  fscanf(file, "%d", &id);
-        function((Relation *)(data.lines[ids[0] - 1].line));
-    }
-    else if (strcmp(cmd, "domain") == 0)
-    {
-        printf("domain\n");
-    }
-    else if (strcmp(cmd, "codomain") == 0)
-    {
-        printf("codomain\n");
-    }
-    else if (strcmp(cmd, "injective") == 0)
-    {
-        printf("injective\n");
-    }
+        {
+            int id = 0;
+            //fscanf(file, "%d", &id);
+            transitive((Relation *)(data.lines[ids[0] - 1].line));
+        }
+        else if (strcmp(cmd, "function") == 0)
+        {
+            int id = 0;
+            //  fscanf(file, "%d", &id);
+            function((Relation *)(data.lines[ids[0] - 1].line));
+        }
+        else if (strcmp(cmd, "domain") == 0)
+        {
+            printf("domain\n");
+        }
+        else if (strcmp(cmd, "codomain") == 0)
+        {
+            printf("codomain\n");
+        }
+        else if (strcmp(cmd, "injective") == 0)
+        {
+            printf("injective\n");
+        }
         else if (strcmp(cmd, "bijective") == 0)
         {
             printf("bijective\n");
+        }else{
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci");
+        return -1;
         }
-    }else{
-        fprintf(stderr,"Prikaz nelze provest na tomto radku");
     }
-    return;
+    else
+    {
+        fprintf(stderr, "Prikaz nelze provest na tomto radku");
+        return -1;
+    }
+    return 0;
 }
 /**
  * @brief nacte set do structu
@@ -841,6 +856,12 @@ Data Load(char file[])
     data.relationsCount = 0;
     data.err = false;
     FILE *fp = fopen(file, "r");
+
+    if(fp == NULL){
+        fprintf(stderr, "Chyba pri otevirani souboru.");
+        data.err = 1;
+        return data;
+    }
     char c = 0;
     int dataSetBufferSize = 50;
     int dataRealtionBufferSize = 50;
@@ -916,7 +937,11 @@ Data Load(char file[])
             data.relationsCount++;
             break;
         case 'C':
-            doCommand(fp, data);
+            if (doCommand(fp, data) != 0)
+            {
+                data.err = 1;
+                return data;
+            }
             break;
         }
         line++;
@@ -927,13 +952,15 @@ Data Load(char file[])
 
 int main(int argc, char **argv)
 {
+    Data data;
     if (argc > 1)
     {
-        Load(argv[1]);
+        data = Load(argv[1]);
     }
+
     // Load("test.txt");
     //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
-    return 0;
+    return data.err;
 }
