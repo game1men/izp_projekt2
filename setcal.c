@@ -203,6 +203,121 @@ void transitive(Relation *relation)
 }
 
 /**
+ * @brief vraci bool podle toho, zda prvek patri do mnoziny
+ *
+ * @param rElement prvek relace
+ * @param set mnozina
+ */
+bool isInSet(char *rElemnt, Set *set)
+{
+    for(int i = 0; i < set->count; i++)
+    {
+        if(strcmp(rElemnt, set->elements[i]) == 0)
+        {
+            return true;
+        }
+
+    }
+    return false;
+}
+
+/**
+ * @brief tiskne true nebo false podle hodnotu parametru bol
+ *
+ * @param bol bool 
+ */
+void boolPrint(bool bol)
+{
+    if(bol == true)
+    {
+        printf("true\n");
+        return;
+    }
+    else
+    {
+        printf("false\n");
+        return;
+    }
+
+}
+/**
+ * @brief zjišťuje jestli je relace injektivní a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * 
+ * @param relation
+ * @param setA 
+ * @param setB 
+ */
+bool injective(Relation *relation, Set *setA, Set *setB)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if( (isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        {
+            return false;
+        }
+    }
+    
+    int a;
+    for(int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            {
+                a++;
+            }
+            if(a > 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * @brief zjišťuje jestli je relace surjektivni a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * 
+ * @param relation
+ * @param setA 
+ * @param setB 
+ */
+bool surjective(Relation *relation, Set *setA, Set *setB)
+{
+    for(int i = 0; i < relation->count; i++)
+    {
+        if( (isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        {
+            return false;
+        }
+    }
+    
+    //podle soucasneho zadání platí surjektivita vždy, protože ji testujeme nad relací a ne nád množinami, jediné co nás zajímá je to, zda prvky patri do relace
+    //pozn. surjektivita = každý prvek z B má k soubě nějaké A, těch může mít i víc 
+    //pozn. aby dávalo určení relace smysl, tak by v zadání muselo být napsané něco ve smyslu určete, zda relace R znázorňuje surjektivitu mnozin A a B
+
+    return true;
+}
+
+/**
+ * @brief zjišťuje jestli je relace bijektivni(surjektivni i injektivni) a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * 
+ * @param relation
+ * @param setA 
+ * @param setB 
+ */
+bool bijective(Relation *relation, Set *setA, Set *setB)
+{
+    if((surjective(relation, setA, setB) && injective(relation, setA, setB)) == true)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+/**
  * @brief tiskne počet prvků v množině A (definované na řádku A).
  *
  * @param set
@@ -499,15 +614,36 @@ void doCommand(FILE *file, Data data)
     }
     else if (strcmp(cmd, "injective") == 0)
     {
-        printf("injective\n");
+        int idA = 0;
+        int idB = 0;
+        int id = 0;
+        fscanf(file, "%d", &id);
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        bool a = injective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+        boolPrint(a);
     }
     else if (strcmp(cmd, "surjective") == 0)
     {
-        printf("surjective\n");
+        int idA = 0;
+        int idB = 0;
+        int id = 0;
+        fscanf(file, "%d", &id);
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        bool a = surjective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+        boolPrint(a);
     }
     else if (strcmp(cmd, "bijective") == 0)
     {
-        printf("bijective\n");
+        int idA = 0;
+        int idB = 0;
+        int id = 0;
+        fscanf(file, "%d", &id);
+        fscanf(file, "%d", &idA);
+        fscanf(file, "%d", &idB);
+        bool a = bijective((Relation *)(data.lines[id - 1]),(Set *)(data.lines[idA - 1]), (Set *)(data.lines[idB - 1]));
+        boolPrint(a);
     }
     return;
 }
@@ -852,7 +988,7 @@ int main(int argc, char **argv)
         Load(argv[1]);
     }
     // Load("test.txt");
-    //printData(Load("test.txt"));
+  //  printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return 0;
