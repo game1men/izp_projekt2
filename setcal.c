@@ -188,12 +188,11 @@ void equals(Set *setA, Set *setB)
     return;
 }
 
-void reflexive(Relation *relation)
+void reflexive(Relation *relation, Set *universum)
 {
-    for (int i = 0; i < relation->count; i++)
+    for (int i = 0; i < universum->count; i++)
     {
-        if (isInRelation(relation, relation->elements[i][1], relation->elements[i][1]) &&
-            isInRelation(relation, relation->elements[i][0], relation->elements[i][0]) == true)
+        if (isInRelation(relation, universum->elements[i], universum->elements[i]) == true)
         {
         }
         else
@@ -667,7 +666,7 @@ int doCommand(FILE *file, Data data)
     {
         if (strcmp(cmd, "reflexive") == 0)
         {
-            reflexive((Relation *)(data.lines[ids[0] - 1].line));
+            reflexive((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
         }
         else if (strcmp(cmd, "symmetric") == 0)
         {
@@ -1075,7 +1074,7 @@ int main(int argc, char **argv)
     }
 
     // Load("test.txt");
-    //  printData(Load("test.txt"));
+      //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return data.err;
