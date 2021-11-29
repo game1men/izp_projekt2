@@ -32,3 +32,10 @@ R (bca bca) (abc bca) (abc abc)
 R (c a) (b a) (d a)
 R (c a) (b a) (d a) (a a) (c c) (b b) (d d)
 R (a b) (c a)
+R (abc abc) (dfg dfg) (lmf lmf)
+R (abc abc) (dfg dfg) (lmf abc)
+R (abc abc) (dfg dfg)
+C reflexive 35
+C reflexive 36
+C reflexive 37
+C reflexive 33
