@@ -1074,7 +1074,7 @@ int main(int argc, char **argv)
     }
 
     // Load("test.txt");
-      printData(Load("test.txt"));
+      //printData(Load("test.txt"));
 
     //TODO: dopsat free na DATA
     return data.err;
