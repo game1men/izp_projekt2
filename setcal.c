@@ -780,6 +780,11 @@ int doCommand(FILE *file, Data data)
             bool a = bijective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
             boolPrint(a);
         }
+         else
+        {
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci");
+            return -1;
+        }
     }
     else   //pokud se nejedna o prikaz na mnozine ani o prikaz na relaci, tak se jedna o chybu
     {
