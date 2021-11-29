@@ -956,6 +956,18 @@ void printData(Data data)
     printf("\n");
 }
 
+int containsOnlyElementsFromSetA(Set *setA, Set *setB)
+{
+    for(int x = 0; x<setB->count;x++){
+         for(int z = 0; z<setA->count;z++){
+                if(strcmp(setB->elements[x],setA->elements[z])!=0){
+                    return -1;
+                }
+        }
+    }
+   return 0;
+}
+
 /**
  * @brief Nacte data ze souboru, a vrati je ve forme structu data
  *
@@ -1021,6 +1033,11 @@ Data Load(char file[])
                 return data;
             }
             loadSet(fp, data.sets[data.setsCout]);
+            if (containsOnlyElementsFromSetA(data.universum,data.sets[data.setsCout])==-1)
+            {
+                data.err = true;
+                return data;
+            }
             data.sets[data.setsCout]->id = line;
             data.lines[line].line = data.sets[data.setsCout];
             data.lines[line].typeOfLine = SET;
