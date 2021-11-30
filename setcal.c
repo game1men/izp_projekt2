@@ -531,7 +531,7 @@ void subset(Set *setA, Set *setB)
  * @param ids bere pole ids, do ktereho ulozi ziskana id
  * @param parsed pocet id, ktera byl nactena
  */
-void getIds(FILE *file, int ids[3], int *parsed)
+int getIds(FILE *file, int ids[4], int *parsed)
 {
 
     char c[100] = {0}; //buffer ynaku
@@ -549,11 +549,15 @@ void getIds(FILE *file, int ids[3], int *parsed)
     if (x <= 1)
     {
         *parsed = 0;
-        return;
+        return 0;
     }
     //pomoci sscanf ze ziskaneho stringu sezene veskera id.
-    *parsed = sscanf(c, "%d%d%d", &ids[0], &ids[1], &ids[2]);
-    return;
+    *parsed = sscanf(c, "%d%d%d%d", &ids[0], &ids[1], &ids[2],&ids[3]);
+    //pokud bylo nalezeno vice jak 3 id, jedna se o chybu
+    if(ids[3]!=-1){
+        return -1;
+    }
+    return 0;
 }
 
 /**
@@ -574,11 +578,15 @@ int doCommand(FILE *file, Data data)
     //fscanf umí brát stringy podle mezer
     fscanf(file, "%31s", cmd);
     //nastavime pole id do -1, aby se dalo poznat ktera id byla nalezena, a ktera ne (tam kde je -1 nebylo ulozeno zadne id)
-    int ids[3] = {-1, -1, -1};
+    int ids[4] = {-1, -1, -1, -1};
 
     //ziskame veskera id
     int parsed;
-    getIds(file, ids, &parsed);
+    if(getIds(file, ids, &parsed)==-1){
+        fprintf(stderr, "Prilis mnoho argumentu");
+       return -1;
+    }
+
 
     //pokud nebyla zadana zadna id, tak vratime error.
     if (ids[0] == -1)
@@ -622,38 +630,83 @@ int doCommand(FILE *file, Data data)
 
         if (strcmp(cmd, "empty") == 0)
         {
+            //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             empty((Set *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "card") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             card((Set *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "complement") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             complement((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
         }
         else if (strcmp(cmd, "union") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             unionAB((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "intersect") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             intersect((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "minus") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             minus((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "subseteq") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             subseteq((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "subset") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             subset((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else if (strcmp(cmd, "equals") == 0)
         {
+             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
+            if(ids[2] != -1 || ids[0] == -1|| ids[1] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else
@@ -666,22 +719,42 @@ int doCommand(FILE *file, Data data)
     {
         if (strcmp(cmd, "reflexive") == 0)
         {
+             if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             reflexive((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
         }
         else if (strcmp(cmd, "symmetric") == 0)
         {
+             if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             symmetric((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "antisymmetric") == 0)
         {
+             if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             antisymmetric((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "transitive") == 0)
         {
+             if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             transitive((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "function") == 0)
         {
+             if(ids[1] != -1 || ids[0] == -1){
+                 fprintf(stderr, "Nespravny pocet argumentu");
+                 return -1;
+            }
             function((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "domain") == 0)
@@ -694,7 +767,6 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "injective") == 0)
         {
-
             bool a = injective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
             boolPrint(a);
         }
@@ -707,6 +779,11 @@ int doCommand(FILE *file, Data data)
         {
             bool a = bijective((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line), (Set *)(data.lines[ids[2] - 1].line));
             boolPrint(a);
+        }
+         else
+        {
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci");
+            return -1;
         }
     }
     else   //pokud se nejedna o prikaz na mnozine ani o prikaz na relaci, tak se jedna o chybu
@@ -959,11 +1036,17 @@ void printData(Data data)
 int containsOnlyElementsFromSetA(Set *setA, Set *setB)
 {
     for(int x = 0; x<setB->count;x++){
+           int b=0;
          for(int z = 0; z<setA->count;z++){
-                if(strcmp(setB->elements[x],setA->elements[z])!=0){
-                    return -1;
+
+                if(strcmp(setB->elements[x],setA->elements[z])==0){
+                    b=1;
                 }
+
         }
+                 if(b!=1){
+                      return -1;
+                }
     }
    return 0;
 }
@@ -1033,11 +1116,6 @@ Data Load(char file[])
                 return data;
             }
             loadSet(fp, data.sets[data.setsCout]);
-            if (containsOnlyElementsFromSetA(data.universum,data.sets[data.setsCout])==-1)
-            {
-                data.err = true;
-                return data;
-            }
             data.sets[data.setsCout]->id = line;
             data.lines[line].line = data.sets[data.setsCout];
             data.lines[line].typeOfLine = SET;
