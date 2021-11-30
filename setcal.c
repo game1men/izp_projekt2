@@ -1250,6 +1250,9 @@ int main(int argc, char **argv)
     if (argc > 1)
     {
         data = Load(argv[1]);
+    }else{
+         fprintf(stderr, "Nezadana cesta k souboru!");
+        return -1;
     }
 
     // Load("test.txt");
