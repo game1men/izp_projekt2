@@ -853,6 +853,11 @@ int loadSet(FILE *file, Set *set)
     int i = 0;
     for (; (c = fgetc(file)) != '\n'; i++)
     {
+        //pokud obsahuje prvky co nepatri do nazvu prvku/relace vyhod chybu
+         if(!((c>='A' &&c<='Z')||(c>='a' &&c<='z')||c==' '||c=='('||c==')')){
+             fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+             return -1;
+        }
         //pokud je treba nacist vice znaku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
         if (i >= charArrayBufferSize)
         {
@@ -937,7 +942,10 @@ int loadRelation(FILE *file, Relation *relation)
     Set set;
     //int relationsBufferSize = 20;
     //nacteni prvku ze radku oddelenych mezerou TODO: udelat specialni funkci na toto a nepouzivat loadSet
-    loadSet(file, &set);
+    if(loadSet(file, &set)==-1){
+        return -1;
+    }
+
 
     //alokace
     relation->elements = (char ***)malloc((set.count / 2) * sizeof(char **));
@@ -1159,7 +1167,12 @@ Data Load(char file[])
         {
 
         case 'U':
-            loadSet(fp, data.universum);
+            if(loadSet(fp, data.universum))
+            {
+                fprintf(stderr, "Nepodarilo se nacist universum.");
+                data.err = true;
+                return data;
+            }
             data.lines[line].line = data.universum;
             data.lines[line].typeOfLine = UNIVERSUM;
             printUniversum(*data.universum);
