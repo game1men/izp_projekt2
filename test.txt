@@ -1,4 +1,4 @@
-U abc dfg lmf abc bca dfgsad 122 dfg def lmfsad ghch 123 456 789 ijkl mno a b c d abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg
+U abc dfg lmf abc bca dfgsad dfg def lmfsad ghch ijkl mno a b c d abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg
 S abc dfg
 S abc dfg lmf
 S abc dfg
@@ -12,15 +12,6 @@ S a b c
 S a b
 S abc bca
 S a b c
-R (123 456) (789 abc)
-R (123 456) (789 abc) (def ghch)
-R (123 456) (def ghch) (ijkl mno)
-R (123 456) (789 abc) (def ghch) (ijkl mno)
-R (123 456) (789 abc) (def ghch) (ijkl mno)
-R (123 456) (789 abc) (def ghch) (ijkl mno) (456 123)
-R (123 456) (789 abc) (def ghch) (ijkl mno)
-R (123 456) (456 123)
-R (123 456) (456 122)
 R (a a) (c c) (c a)
 R (a a) (c c)
 R (a a) (a b) (c c) (b c)
@@ -35,7 +26,3 @@ R (a b) (c a)
 R (abc abc) (dfg dfg) (lmf lmf)
 R (abc abc) (dfg dfg) (lmf abc)
 R (abc abc) (dfg dfg)
-C reflexive 35
-C reflexive 36
-C reflexive 37
-C reflexive 33
