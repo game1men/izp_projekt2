@@ -839,11 +839,11 @@ int loadSet(FILE *file, Set *set)
     char c = 0;
 
     if ((c = fgetc(file)) == '\n')
-    { //preskoci prvni mezeru, pokud se jedna o znak novyho radku ukonci funkci
+    { //preskoci prvni mezeru, pokud se jedna o znak noveho radku ukonci funkci
 
         return 0;
     }
-     if (c !=' ')
+    if (c !=' ')
     { //pokud prvni znak nebyl mezera ukonci funkci a vrati error
         fprintf(stderr, "Chybi mezera za prvnim znakem radku!");
         return -1;
@@ -1054,7 +1054,15 @@ void printData(Data data)
     }
     printf("\n");
 }
-
+/**
+ * @brief Kontroluje, jestli mnozina obsahuje pouze prvky ze setA
+ *
+ * @param setA
+ * @param relation
+ * @return int
+ *  @retval 0 obsahuje prvky pouze ze setA
+ *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ */
 int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
 {
     for (int x = 0; x < setB->count; x++)
@@ -1075,7 +1083,15 @@ int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
     }
     return 0;
 }
-
+/**
+ * @brief Kontroluje, jestli relace obsahuje pouze prvky ze setA
+ *
+ * @param setA
+ * @param relation
+ * @return int
+ *  @retval 0 obsahuje prvky pouze ze setA
+ *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ */
 int RelationContainsOnlyElementsFromSetA(Set *setA, Relation *relation)
 {
     for (int x = 0; x < relation->count; x++)
@@ -1171,7 +1187,7 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
-
+            //Kontrola, jestli vsechny prvky patri do universa.
             if (SetContainsOnlyElementsFromSetA(data.universum, data.sets[data.setsCout]) == -1)
             {
                 fprintf(stderr, "Prvek nepatri do univerza!!");
@@ -1207,6 +1223,7 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
+            //Kontrola, jestli vsechny prvky patri do universa.
             if (RelationContainsOnlyElementsFromSetA(data.universum, data.relations[data.relationsCount]) == -1)
             {
                 fprintf(stderr, "Prvek nepatri do univerza!!");
@@ -1251,7 +1268,7 @@ int main(int argc, char **argv)
     {
         data = Load(argv[1]);
     }else{
-         fprintf(stderr, "Nezadana cesta k souboru!");
+        fprintf(stderr, "Nezadana cesta k souboru!");
         return -1;
     }
 
