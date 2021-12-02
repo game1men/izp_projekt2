@@ -105,7 +105,7 @@ void symmetric(Relation *relation)
 void domain(Relation *relation){
   printf("S: ");
     for(int i = 0; i < relation->count; i++){
-        if(i+2==relation->count){
+        if(i+1==relation->count){
                printf("%s", relation->elements[i][0]);  
         }else{
                printf("%s ", relation->elements[i][0]);  
@@ -119,7 +119,7 @@ void domain(Relation *relation){
 void codomain(Relation *relation){
   printf("S: ");
   for(int i = 0; i < relation->count; i++){
-        if(i+2==relation->count){
+        if(i+1==relation->count){
                printf("%s", relation->elements[i][1]);  
         }else{
                printf("%s ", relation->elements[i][1]);  
