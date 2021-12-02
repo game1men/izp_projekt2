@@ -108,11 +108,11 @@ void domain(Relation *relation){
         if(i+2==relation->count){
                printf("%s", relation->elements[i][0]);  
         }else{
-               printf("%s,", relation->elements[i][0]);  
+               printf("%s ", relation->elements[i][0]);  
         }
        
   }
-  printf(")\n");
+  printf("\n");
   return;
 }
 
@@ -122,10 +122,10 @@ void codomain(Relation *relation){
         if(i+2==relation->count){
                printf("%s", relation->elements[i][1]);  
         }else{
-               printf("%s,", relation->elements[i][1]);  
+               printf("%s ", relation->elements[i][1]);  
         }
   }
-   printf(")\n");
+   printf("\n");
   return;
 }
 
