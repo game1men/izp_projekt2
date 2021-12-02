@@ -101,6 +101,33 @@ void symmetric(Relation *relation)
     }
     printf("true\n");
 }
+
+void domain(Relation *relation){
+  for(int i = 0; i < relation->count; i++){
+    for(int j = 0; j < relation->count; i++){
+      if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0){
+        printf("false\n");
+        return;
+      }
+    }
+  }
+  printf("true\n");
+  return;
+}
+
+void codomain(Relation *relation){
+  for(int i = 0; i < relation->count; i++){
+    for(int j = 0; j < relation->count; i++){
+      if(strcmp(relation->elements[i][1], relation->elements[j][1]) == 0){
+        printf("false\n");
+        return;
+      }
+    }
+  }
+  printf("true\n");
+  return;
+}
+
 /**
  * @brief true nebo false jestli je antisym
  *
@@ -687,11 +714,11 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "domain") == 0)
         {
-            printf("domain\n");
+            domain((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "codomain") == 0)
         {
-            printf("codomain\n");
+            codomain((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "injective") == 0)
         {
