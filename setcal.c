@@ -377,7 +377,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
         }
     }
 
-    //podle soucasneho zadání platí surjektivita vždy, protože ji testujeme nad relací a ne nád množinami, jediné co nás zajímá je to, zda prvky patri do relace
+    //podle soucasneho zadání platí surjektivita vždy, protože ji testujeme nad relací a ne nad množinami, jediné co nás zajímá je to, zda prvky patri do relace
     //pozn. surjektivita = každý prvek z B má k soubě nějaké A, těch může mít i víc
     //pozn. aby dávalo určení relace smysl, tak by v zadání muselo být napsané něco ve smyslu určete, zda relace R znázorňuje surjektivitu mnozin A a B
 
@@ -398,6 +398,70 @@ bool bijective(Relation *relation, Set *setA, Set *setB)
         return true;
     }
     return false;
+}
+
+
+/**
+ * @brief vypisuje definicni obor nebo obor hodnot, podle toho jestli se jedna o domain nebo codomain
+ *
+ * @param relation
+ * @param identification promenna slouzici k odliseni domain a codomain
+ */
+void dom_cod (Relation *relation, int identification)
+{
+    int usedElements[relation->count + 1];
+    for(int i = 0; i < relation->count + 1; i++)
+    {
+        usedElements[i] = -1;
+    }
+    int j = 0;
+    bool con;
+    printf("S");
+    for(int i = 0; i < relation->count; i++)
+    {
+        con = false;
+        for(int x = 0; x < j; x++)
+        {
+            
+            if(strcmp(relation->elements[i][identification], relation->elements[(usedElements[x])][identification]) == 0)
+            {
+                con = true;
+                break;
+            }
+        }   
+
+        if(con == false)
+        {
+            usedElements[j] = i;
+            j++;
+            printf(" %s", relation->elements[i][identification]);
+        }
+    }
+}
+
+/**
+ * @brief vypisuje obor hodnot
+ *
+ * @param relation
+ */
+void domain(Relation *relation)
+{
+    int identification = 0; //promenna slouzici k odliseni domain a codomain
+    dom_cod(relation, identification);
+    return;
+}
+
+
+/**
+ * @brief vypisuje definicni obor
+ *
+ * @param relation
+ */
+void codomain(Relation *relation)
+{
+    int identification = 1; //promenna slouzici k odliseni domain a codomain
+    dom_cod(relation, identification);
+    return;
 }
 
 /**
@@ -833,11 +897,21 @@ int doCommand(FILE *file, Data data)
         }
         else if (strcmp(cmd, "domain") == 0)
         {
-            printf("domain\n");
+            if (ids[1] != -1 || ids[0] == -1)
+            {
+                fprintf(stderr, "Nespravny pocet argumentu");
+                return -1;
+            }
+            domain((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "codomain") == 0)
-        {
-            printf("codomain\n");
+        {  
+            if (ids[1] != -1 || ids[0] == -1)
+            {
+                fprintf(stderr, "Nespravny pocet argumentu");
+                return -1;
+            }
+            codomain((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "injective") == 0)
         {
@@ -1389,6 +1463,7 @@ Data Load(char file[])
 int main(int argc, char **argv)
 {
     Data data;
+    //printData(Load("test.txt"));
     if (argc > 1)
     {
         data = Load(argv[1]);
