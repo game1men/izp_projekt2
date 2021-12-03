@@ -40,7 +40,66 @@ typedef struct
     int relationsCount;   //pocet relaci
     Set *universum;       // universum
     bool err;             //nastal error
+    int lineCount;        //pocet nahranych radku
 } Data;
+
+/**
+ * @brief uvolní paměť od všeho co bylo dynamicky alokováno v structu Relation
+ *
+ * @param relation
+ */
+void FreeRelation(Relation *relation)
+{
+
+    for (int i = 0; i < relation->count; i++)
+    {
+        free(relation->elements[i][0]);
+        free(relation->elements[i][1]);
+        free(relation->elements[i]);
+    }
+
+    free(relation->elements);
+}
+
+/**
+ * @brief uvolní paměť od všeho co bylo dynamicky alokováno v structu Set
+ *
+ * @param set
+ */
+void FreeSet(Set *set)
+{
+
+    for (int i = 0; i < set->count; i++)
+    {
+        free(set->elements[i]);
+    }
+    free(set->elements);
+}
+
+/**
+ * @brief uvolní paměť od všeho co bylo dynamicky alokováno v structu Data
+ *
+ * @param data
+ */
+void FreeData(Data data)
+{
+    for (int i = 0; i < data.relationsCount; i++)
+    {
+        FreeRelation(data.relations[i]);
+        free(data.relations[i]);
+    }
+    for (int i = 0; i < data.setsCout; i++)
+    {
+        FreeSet(data.sets[i]);
+        free(data.sets[i]);
+    }
+
+    FreeSet(data.universum);
+    free(data.universum);
+    free(data.lines);
+    free(data.relations);
+    free(data.sets);
+}
 
 void printSet(Set set);
 
@@ -832,7 +891,7 @@ int loadSet(FILE *file, Set *set)
 
     //pokud se nepodvedla alokace
     if (set->elements[0] == NULL || set->elements == NULL)
-    {   
+    {
         fprintf(stderr,"Chyba pri allokaci.");
         return -1;
     }
@@ -840,14 +899,26 @@ int loadSet(FILE *file, Set *set)
     char c = 0;
 
     if ((c = fgetc(file)) == '\n')
-    { //preskoci prvni mezeru, pokud je to konec radku, tak ukonci funkci
+    { //preskoci prvni mezeru, pokud se jedna o znak noveho radku ukonci funkci
+
         return 0;
+    }
+    if (c != ' ')
+    { //pokud prvni znak nebyl mezera ukonci funkci a vrati error
+        fprintf(stderr, "Chybi mezera za prvnim znakem radku!");
+        return -1;
     }
 
     //nacita znaky dokud nenarazi na konec radku
     int i = 0;
     for (; (c = fgetc(file)) != '\n'; i++)
     {
+        //pokud obsahuje prvky co nepatri do nazvu prvku/relace vyhod chybu
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c == '(' || c == ')'))
+        {
+            fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+            return -1;
+        }
         //pokud je treba nacist vice znaku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
         if (i >= charArrayBufferSize)
         {
@@ -881,6 +952,7 @@ int loadSet(FILE *file, Set *set)
                     fprintf(stderr,"Chyba pri reallokaci.");
                     return -1;
                 }
+
             }
 
             //alokace místa pro další prvek
@@ -948,7 +1020,10 @@ int loadRelation(FILE *file, Relation *relation)
     Set set;
     //int relationsBufferSize = 20;
     //nacteni prvku ze radku oddelenych mezerou TODO: udelat specialni funkci na toto a nepouzivat loadSet
-    loadSet(file, &set);
+    if (loadSet(file, &set) == -1)
+    {
+        return -1;
+    }
 
     //alokace
     relation->elements = (char ***)malloc((set.count / 2) * sizeof(char **));
@@ -962,7 +1037,7 @@ int loadRelation(FILE *file, Relation *relation)
     for (int i = 0; i < set.count / 2; i++)
     {
         relation->elements[i] = (char **)malloc(2 * sizeof(char *));
-        
+
         if (relation->elements[i] == NULL)
         {
             fprintf(stderr,"Chyba pri allokaci.");
@@ -1007,10 +1082,10 @@ int loadRelation(FILE *file, Relation *relation)
         }
         //pocet prvku je o 1 vetsi jak index na kterem je ulozen
         relation->count = f + 1;
-
         //je potreba krokovat pole elementu relace polovicnim krokem
         f += i % 2;
     }
+    FreeSet(&set);
     return 0;
 }
 
@@ -1082,7 +1157,68 @@ void printData(Data data)
     }
     printf("\n");
 }
+/**
+ * @brief Kontroluje, jestli mnozina obsahuje pouze prvky ze setA
+ *
+ * @param setA
+ * @param relation
+ * @return int
+ *  @retval 0 obsahuje prvky pouze ze setA
+ *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ */
+int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
+{
+    for (int x = 0; x < setB->count; x++)
+    {
+        int b = 0;
+        for (int z = 0; z < setA->count; z++)
+        {
 
+            if (strcmp(setB->elements[x], setA->elements[z]) == 0)
+            {
+                b = 1;
+            }
+        }
+        if (b != 1)
+        {
+            return -1;
+        }
+    }
+    return 0;
+}
+/**
+ * @brief Kontroluje, jestli relace obsahuje pouze prvky ze setA
+ *
+ * @param setA
+ * @param relation
+ * @return int
+ *  @retval 0 obsahuje prvky pouze ze setA
+ *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ */
+int RelationContainsOnlyElementsFromSetA(Set *setA, Relation *relation)
+{
+    for (int x = 0; x < relation->count; x++)
+    {
+
+        for (int j = 0; j < 2; j++)
+        {
+            int b = 0;
+            for (int z = 0; z < setA->count; z++)
+            {
+
+                if (strcmp(setA->elements[z], relation->elements[x][j]) == 0)
+                {
+                    b = 1;
+                }
+            }
+            if (b != 1)
+            {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
 /**
  * @brief Nacte data ze souboru, a vrati je ve forme structu data
  *
@@ -1127,13 +1263,19 @@ Data Load(char file[])
         {
 
         case 'U':
-            loadSet(fp, data.universum);
+            if (loadSet(fp, data.universum))
+            {
+                fprintf(stderr, "Nepodarilo se nacist universum.");
+                data.err = true;
+                return data;
+            }
             data.lines[line].line = data.universum;
             data.lines[line].typeOfLine = UNIVERSUM;
             printUniversum(*data.universum);
             printf("\n");
             break;
         case 'S':
+
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
             if (data.setsCout >= dataSetBufferSize)
             {
@@ -1156,7 +1298,19 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
-            loadSet(fp, data.sets[data.setsCout]);
+            if (loadSet(fp, data.sets[data.setsCout]) == -1)
+            {
+                fprintf(stderr, "Nepodarilo se nacist mnozinu.");
+                data.err = true;
+                return data;
+            }
+            //Kontrola, jestli vsechny prvky patri do universa.
+            if (SetContainsOnlyElementsFromSetA(data.universum, data.sets[data.setsCout]) == -1)
+            {
+                fprintf(stderr, "Prvek nepatri do univerza!!");
+                data.err = true;
+                return data;
+            }
             data.sets[data.setsCout]->id = line;
             data.lines[line].line = data.sets[data.setsCout];
             data.lines[line].typeOfLine = SET;
@@ -1186,9 +1340,24 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
-            loadRelation(fp, data.relations[data.relationsCount]);
+
+            if (loadRelation(fp, data.relations[data.relationsCount]) == -1)
+            {
+                fprintf(stderr, "Nepodarilo se nacist mnozinu.");
+                data.err = true;
+                return data;
+            }
+            //Kontrola, jestli vsechny prvky patri do universa.
+            if (RelationContainsOnlyElementsFromSetA(data.universum, data.relations[data.relationsCount]) == -1)
+            {
+                fprintf(stderr, "Prvek nepatri do univerza!!");
+                data.err = true;
+                return data;
+            }
             printRelation(*data.relations[data.relationsCount]);
+
             printf("\n");
+
             data.lines[line].line = data.relations[data.relationsCount];
             data.lines[line].typeOfLine = RELATION;
             data.relations[data.relationsCount]->id = line;
@@ -1201,19 +1370,20 @@ Data Load(char file[])
                 return data;
             }
             break;
+        default:
+            if (doCommand(fp, data) != 0)
+            {
+                fprintf(stderr, "nezname znak na zacatku radku!");
+                data.err = true;
+                return data;
+            }
+            break;
         }
         line++;
     }
-
+    data.lineCount = line;
+    fclose(fp);
     return data;
-}
-
-void freeDATA(Data data)
-{
-    free(data.relations);
-    free(data.sets);
-    free(data.lines);
-    free(data.universum);
 }
 
 int main(int argc, char **argv)
@@ -1223,12 +1393,17 @@ int main(int argc, char **argv)
     {
         data = Load(argv[1]);
     }
+    else
+    {
+        fprintf(stderr, "Nezadana cesta k souboru!");
+        return -1;
+    }
 
+    FreeData(data);
     // Load("test.txt");
     //printData(Load("test.txt"));
 
-    //TODO: dopsat free na DATA
-    freeDATA(data);
+
 
     return data.err;
 }
