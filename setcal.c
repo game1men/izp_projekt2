@@ -437,6 +437,7 @@ void dom_cod (Relation *relation, int identification)
             printf(" %s", relation->elements[i][identification]);
         }
     }
+    printf("\n");
 }
 
 /**
@@ -1058,7 +1059,27 @@ int loadSet(FILE *file, Set *set)
     set->elements[j][i] = 0;
     //pocet prvku je o 1 vetsi jak index
     set->count = j + 1;
-
+    
+    //kontrola duplicitnich prvku
+    int elInSet = 0;
+    for(int i = 0; i < set->count; i++)
+    {
+        if(set->elements[i][0] == '(')
+            break;
+        elInSet = 0;
+        for(int j = 0; j < set->count; j++)
+        {
+            if (strcmp(set->elements[j], set->elements[i]) == 0)
+            {
+                elInSet++;
+            }
+            if(elInSet >= 2)
+            {
+                fprintf(stderr,"Duplicitni prvek v mnozine.");
+                return -1;
+            }
+        }
+    }
     return 0;
 }
 
@@ -1462,8 +1483,8 @@ Data Load(char file[])
 
 int main(int argc, char **argv)
 {
-    Data data;
     //printData(Load("test.txt"));
+    Data data;
     if (argc > 1)
     {
         data = Load(argv[1]);
