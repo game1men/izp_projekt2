@@ -103,28 +103,40 @@ void symmetric(Relation *relation)
 }
 
 void domain(Relation *relation){
-  for(int i = 0; i < relation->count; i++){
-    for(int j = 0; j < relation->count; i++){
-      if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0){
-        printf("false\n");
-        return;
+  printf("S: ");
+    for(int i = 0; i < relation->count; i++){
+      for(int j = 1; j < relation->count; j++){
+        if(strcmp(relation->elements[i][0],relation->elements[j][0])==0){
+
+        } else {
+          if(i+1==relation->count){
+                 printf("%s", relation->elements[i][0]);
+          }else{
+                 printf("%s ", relation->elements[i][0]);
+          }
+        }
       }
-    }
   }
-  printf("true\n");
+  printf("\n");
   return;
 }
 
 void codomain(Relation *relation){
+  printf("S: ");
   for(int i = 0; i < relation->count; i++){
-    for(int j = 0; j < relation->count; i++){
-      if(strcmp(relation->elements[i][1], relation->elements[j][1]) == 0){
-        printf("false\n");
-        return;
+    for(int j = 1; j < relation->count; j++){
+      if(strcmp(relation->elements[i][1],relation->elements[j][1])==0){
+
+      } else {
+        if(i+1==relation->count){
+               printf("%s", relation->elements[i][1]);
+        }else{
+               printf("%s ", relation->elements[i][1]);
+        }
       }
     }
   }
-  printf("true\n");
+   printf("\n");
   return;
 }
 
