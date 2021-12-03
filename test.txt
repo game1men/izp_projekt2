@@ -26,3 +26,4 @@ R (a b) (c a)
 R (abc abc) (dfg dfg) (lmf lmf)
 R (abc abc) (dfg dfg) (lmf abc)
 R (abc abc) (dfg dfg)
+C domain 24
