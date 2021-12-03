@@ -832,7 +832,8 @@ int loadSet(FILE *file, Set *set)
 
     //pokud se nepodvedla alokace
     if (set->elements[0] == NULL || set->elements == NULL)
-    {
+    {   
+        fprintf(stderr,"Chyba pri allokaci.");
         return -1;
     }
 
@@ -852,6 +853,11 @@ int loadSet(FILE *file, Set *set)
         {
             charArrayBufferSize += charArrayBufferSize;
             set->elements[j] = (char *)realloc(set->elements[j], charArrayBufferSize * sizeof(char));
+            if (set->elements[j] == NULL)
+            {
+                fprintf(stderr,"Chyba pri reallokaci.");
+                return -1;
+            }
         }
         //ukonci se pokud je na konci souboru
         if (c == EOF)
@@ -870,6 +876,11 @@ int loadSet(FILE *file, Set *set)
             {
                 elementsBufferSize += elementsBufferSize;
                 set->elements = (char **)realloc(set->elements, elementsBufferSize * sizeof(char *));
+                if (set->elements == NULL)
+                {
+                    fprintf(stderr,"Chyba pri reallokaci.");
+                    return -1;
+                }
             }
 
             //alokace místa pro další prvek
@@ -877,6 +888,7 @@ int loadSet(FILE *file, Set *set)
             //pokud se nepodvedla alokace
             if (set->elements[j] == NULL)
             {
+                fprintf(stderr,"Chyba pri allokaci.");
                 return -1;
             }
             //vynulovani i (-1 aby po inkrementaci bylo 0)
@@ -890,6 +902,11 @@ int loadSet(FILE *file, Set *set)
     if (i >= charArrayBufferSize)
     {
         set->elements[j] = (char *)realloc(set->elements[j], (charArrayBufferSize + 1) * sizeof(char));
+        if (set->elements[j] == NULL)
+        {
+            fprintf(stderr,"Chyba pri reallokaci.");
+            return -1;
+        }
     }
     //da 0 na konci stringu
     set->elements[j][i] = 0;
@@ -938,6 +955,7 @@ int loadRelation(FILE *file, Relation *relation)
 
     if (relation->elements == NULL)
     {
+        fprintf(stderr,"Chyba pri allokaci.");
         return -1;
     }
 
@@ -947,6 +965,7 @@ int loadRelation(FILE *file, Relation *relation)
         
         if (relation->elements[i] == NULL)
         {
+            fprintf(stderr,"Chyba pri allokaci.");
             return -1;
         }
     }
@@ -958,6 +977,7 @@ int loadRelation(FILE *file, Relation *relation)
         relation->elements[f][(i % 2)] = (char *)malloc(32 * sizeof(char));
         if (relation->elements[f][(i % 2)] == NULL)
         {
+            fprintf(stderr,"Chyba pri allokaci.");
             return -1;
         }
 
@@ -1095,6 +1115,7 @@ Data Load(char file[])
 
     if (data.sets == NULL || data.universum == NULL || data.relations == NULL || data.lines == NULL)
     {
+        fprintf(stderr,"Chyba pri allokaci.");
         data.err = true;
         return data;
     }
@@ -1119,11 +1140,19 @@ Data Load(char file[])
                 dataSetBufferSize += dataSetBufferSize;
                 data.sets = (Set **)realloc(data.sets, dataSetBufferSize * sizeof(Set *));
                 data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
+
+                if (data.sets == NULL || data.lines == NULL)
+                {
+                    fprintf(stderr,"Chyba pri reallokaci.");
+                    data.err = true;
+                    return data;
+                }
             }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
             //pokud se alkoce nepoved, vrati data s err
             if (data.sets[data.setsCout] == NULL)
             {
+                fprintf(stderr,"Chyba pri allokaci.");
                 data.err = true;
                 return data;
             }
@@ -1142,11 +1171,18 @@ Data Load(char file[])
                 dataRealtionBufferSize += dataRealtionBufferSize;
                 data.relations = (Relation **)realloc(data.relations, dataRealtionBufferSize * sizeof(Relation *));
                 data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
+                if (data.relations == NULL || data.lines == NULL)
+                {
+                    fprintf(stderr,"Chyba pri reallokaci.");
+                    data.err = true;
+                    return data;
+                }
             }
             data.relations[data.relationsCount] = (Relation *)malloc(sizeof(Relation));
             //pokud se alkoce nepoved, vrati data s err
             if (data.relations[data.relationsCount] == NULL)
             {
+                fprintf(stderr,"Chyba pri allokaci.");
                 data.err = true;
                 return data;
             }
