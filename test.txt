@@ -1,29 +1,3 @@
-U abc dfg lmf abc bca dfgsad dfg def lmfsad ghch ijkl mno a b c d abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg
-S abc dfg
-S abc dfg lmf
-S abc dfg
-S dfg abc
-S abc dfgsad
-S abc dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg dfgsad lmfsad abcsda dfgasd lmf abc dfg
-S abc dfg
-S abc dfg
-S abc dfg
-S a b c
+U a b c ab
 S a b
-S abc bca
-S a b c
-R (a a) (c c) (c a)
-R (a a) (c c)
-R (a a) (a b) (c c) (b c)
-R (a b) (b a) (a a) (c a) (c c) (a c) (b c) (b b) (c b)
-R (abc bca) (abc abc)
-R (a b) (b a) (a a) (c a) (c c) (a c) (b c) (b b)
-R (abc abc) (abc bca)
-R (bca bca) (abc bca) (abc abc)
-R (c a) (b a) (d a)
-R (c a) (b a) (d a) (a a) (c c) (b b) (d d)
-R (a b) (c a)
-R (abc abc) (dfg dfg) (lmf lmf)
-R (abc abc) (dfg dfg) (lmf abc)
-R (abc abc) (dfg dfg)
-C domain 24
+R (a b) (a c)
