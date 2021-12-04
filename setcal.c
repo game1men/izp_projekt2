@@ -43,6 +43,14 @@ typedef struct
     int lineCount;        //pocet nahranych radku
 } Data;
 
+const char *COMMANDS[] = {"empty", "card", "complement", "union", "intersect", "minus", "subseteq",
+  "subset", "equals", "reflexive", "symmetric", "antisymmetric", "transitive", "function", "domain",
+  "codomain", "injective", "surjective", "bijective", "closure_ref", "closure_sym", "closure_trans",
+  "select", "true", "false"};
+
+const int COMMAND_COUNT = 25;
+
+
 /**
  * @brief uvolní paměť od všeho co bylo dynamicky alokováno v structu Relation
  *
@@ -942,6 +950,23 @@ int doCommand(FILE *file, Data data)
     }
     return 0;
 }
+
+/**
+ * @brief vraci bool podle toho, jestli se jedna o nevalidni prvek
+ *
+ * @param str element 
+ */
+bool isCommand(char *str)
+{
+    for(int i = 0; i < COMMAND_COUNT; i++)
+    {
+        if(strcmp(str, COMMANDS[i]) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 /**
  * @brief nacte set do structu
  *
@@ -1400,6 +1425,18 @@ Data Load(char file[])
             }
             data.lines[line].line = data.universum;
             data.lines[line].typeOfLine = UNIVERSUM;
+
+            //kontrola nevalidniho prvku
+            for(int i = 0; i < data.universum->count; i++)
+            {
+                if(isCommand(data.universum->elements[i]) == true) 
+                {
+                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    data.err = true;
+                    return data; 
+                }
+            }
+
             printUniversum(*data.universum);
             printf("\n");
             break;
@@ -1440,6 +1477,18 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
+            
+            //kontrola nevalidniho prvku
+            for(int i = 0; i < data.sets[data.setsCout]->count; i++)
+            {
+                if(isCommand(data.sets[data.setsCout]->elements[i]) == true) 
+                {
+                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    data.err = true;
+                    return data; 
+                }
+            }
+
             data.sets[data.setsCout]->id = line;
             data.lines[line].line = data.sets[data.setsCout];
             data.lines[line].typeOfLine = SET;
@@ -1490,6 +1539,18 @@ Data Load(char file[])
                 fprintf(stderr, "Duplicitni prvek v relaci.");
                 data.err = true;
                 return data;
+            }
+
+            //kontrola nevalidniho prvku
+            for(int i = 0; i < data.relations[data.relationsCount]->count; i++)
+            {
+                if( (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true) ||
+                    (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true)    )
+                {
+                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    data.err = true;
+                    return data; 
+                }
             }
 
             printRelation(*data.relations[data.relationsCount]);
