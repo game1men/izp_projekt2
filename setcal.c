@@ -1,3 +1,14 @@
+/*
+Projekt 2 - Práce s datovými strukturami
+
+vytvorili:
+    Rene Ceska          xceska06    https://github.com/game1men
+    Krystof Andrysek    xandry12    https://github.com/ArgonOutPlay
+    Ivan Mahut          xmahut01    https://github.com/fasen92
+    Dusan Sluka         xsluka00    https://github.com/Dusko-8
+    Samuel Barak        xbarak08    https://github.com/SamB4rak
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -380,7 +391,7 @@ bool injective(Relation *relation, Set *setA, Set *setB)
         b = 0;
         for (int j = 0; j < relation->count; j++)
         {
-            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
             {
                 a++;
             }
@@ -431,7 +442,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
         isIn = false;
         for (int j = 0; j < relation->count; j++)
         {
-            if (strcmp(relation->elements[j][1], setB->elements[i]) == 0) 
+            if (strcmp(relation->elements[j][1], setB->elements[i]) == 0)
             {
                 isIn = true;
             }
@@ -448,7 +459,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
         a = 0;
         for (int j = 0; j < relation->count; j++)
         {
-            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
             {
                 a++;
             }
