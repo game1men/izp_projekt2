@@ -1,3 +1,17 @@
+/*
+Projekt 2 - Práce s datovými strukturami
+
+github repozitář:   https://github.com/game1men/izp_projekt2
+trello nástěnka:    https://trello.com/invite/b/8VlO86Y4/369b11166d8734d1b1869ed0ebb6003a/izpprojekt2
+
+vytvorili:
+    Rene Ceska          xceska06    https://github.com/game1men
+    Krystof Andrysek    xandry12    https://github.com/ArgonOutPlay
+    Ivan Mahut          xmahut01    https://github.com/fasen92
+    Dusan Sluka         xsluka00    https://github.com/Dusko-8
+    Samuel Barak        xbarak08    https://github.com/SamB4rak
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
