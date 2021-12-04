@@ -1281,6 +1281,40 @@ int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
     }
     return 0;
 }
+
+/**
+ * @brief Kontroluje, zda se v relaci vyskytuji duplicitni prvky a podle toho vraci bool
+ *
+ * @param relation
+ * @return bool
+ */
+bool DuplicitElementInRelation(Relation *relation)
+{
+    int elIsIn;
+    for(int i = 0; i < relation->count; i++)
+    {
+        elIsIn = 0;
+        for(int j = 0; j < relation->count; j++)
+        {
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
+            {
+                if(strcmp(relation->elements[i][1], relation->elements[j][1]) == 0)
+                {
+                    elIsIn++;   
+                    if(elIsIn >=2)
+                    {
+                        return true; 
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+
+
 /**
  * @brief Kontroluje, jestli relace obsahuje pouze prvky ze setA
  *
@@ -1449,6 +1483,15 @@ Data Load(char file[])
                 data.err = true;
                 return data;
             }
+
+            //kontrola duplicitnich prvku
+            if(DuplicitElementInRelation(data.relations[data.relationsCount]) == true)
+            {
+                fprintf(stderr, "Duplicitni prvek v relaci.");
+                data.err = true;
+                return data;
+            }
+
             printRelation(*data.relations[data.relationsCount]);
 
             printf("\n");
