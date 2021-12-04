@@ -44,12 +44,11 @@ typedef struct
 } Data;
 
 const char *COMMANDS[] = {"empty", "card", "complement", "union", "intersect", "minus", "subseteq",
-  "subset", "equals", "reflexive", "symmetric", "antisymmetric", "transitive", "function", "domain",
-  "codomain", "injective", "surjective", "bijective", "closure_ref", "closure_sym", "closure_trans",
-  "select", "true", "false"};
+                          "subset", "equals", "reflexive", "symmetric", "antisymmetric", "transitive", "function", "domain",
+                          "codomain", "injective", "surjective", "bijective", "closure_ref", "closure_sym", "closure_trans",
+                          "select", "true", "false"};
 
 const int COMMAND_COUNT = 25;
-
 
 /**
  * @brief uvolní paměť od všeho co bylo dynamicky alokováno v structu Relation
@@ -363,12 +362,12 @@ bool injective(Relation *relation, Set *setA, Set *setB)
         }
     }
 
-    if(relation->count != setA->count)
+    if (relation->count != setA->count)
     {
         return false;
     }
 
-    if(setA->count > setB->count)
+    if (setA->count > setB->count)
     {
         return false;
     }
@@ -419,7 +418,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
     }
 
     //relací musi byt vždy vice nebo stejne jak prvku v mnozine B
-    if(relation->count < setB->count)
+    if (relation->count < setB->count)
     {
         return false;
     }
@@ -436,7 +435,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
                 isIn = true;
             }
         }
-        if(isIn == false)
+        if (isIn == false)
         {
             return false;
         }
@@ -457,7 +456,6 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
                 return false;
             }
         }
-
     }
     return true;
 }
@@ -737,7 +735,7 @@ int getIds(FILE *file, int ids[4], int *parsed)
     char c[100] = {0}; //buffer znaku
     int x = 0;
     //cte radek, dokud nenarazi na konec radku
-    for (; (c[x] = fgetc(file)) != EOF && c[x]!= '\n'; x++)
+    for (; (c[x] = fgetc(file)) != EOF && c[x] != '\n'; x++)
     {
         //pokud je x > jak 100, tak ukonci cyklus
         if (x >= 99)
@@ -1026,9 +1024,9 @@ int doCommand(FILE *file, Data data)
  */
 bool isCommand(char *str)
 {
-    for(int i = 0; i < COMMAND_COUNT; i++)
+    for (int i = 0; i < COMMAND_COUNT; i++)
     {
-        if(strcmp(str, COMMANDS[i]) == 0)
+        if (strcmp(str, COMMANDS[i]) == 0)
         {
             return true;
         }
@@ -1062,7 +1060,6 @@ int loadSet(FILE *file, Set *set)
         return -1;
     }
     set->elements[0] = (char *)malloc(charArrayBufferSize * sizeof(char));
-
 
     //pokud se nepodvedla alokace
     if (set->elements[0] == NULL)
@@ -1397,17 +1394,17 @@ int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
 bool DuplicitElementInRelation(Relation *relation)
 {
     int elIsIn;
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
         elIsIn = 0;
-        for(int j = 0; j < relation->count; j++)
+        for (int j = 0; j < relation->count; j++)
         {
-            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
             {
-                if(strcmp(relation->elements[i][1], relation->elements[j][1]) == 0)
+                if (strcmp(relation->elements[i][1], relation->elements[j][1]) == 0)
                 {
                     elIsIn++;
-                    if(elIsIn >=2)
+                    if (elIsIn >= 2)
                     {
                         return true;
                     }
@@ -1417,9 +1414,6 @@ bool DuplicitElementInRelation(Relation *relation)
     }
     return false;
 }
-
-
-
 
 /**
  * @brief Kontroluje, jestli relace obsahuje pouze prvky ze setA
@@ -1485,6 +1479,8 @@ Data Load(char file[])
     data.relations = (Relation **)malloc(dataSetBufferSize * sizeof(Relation *));
     data.lines = (Line *)malloc((dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line)); //+1 protoze obsahuje i universum
     data.universum = (Set *)malloc(sizeof(Set));
+    data.universum->elements = NULL;
+    data.universum->count = 0;
     int line = 0;
 
     if (data.sets == NULL || data.universum == NULL || data.relations == NULL || data.lines == NULL)
@@ -1494,7 +1490,7 @@ Data Load(char file[])
         return data;
     }
     //nacitani prvniho znaku na kazdym radku
-    bool universumLoaded =0;
+    bool universumLoaded = 0;
     while ((c = fgetc(fp)) != EOF)
     {
         data.lines[line].typeOfLine = NONE;
@@ -1507,7 +1503,8 @@ Data Load(char file[])
             {
                 fprintf(stderr, "Universum zadano vice nez 1");
                 data.err = true;
-
+                fclose(fp);
+                return data;
             }
             if (loadSet(fp, data.universum))
             {
@@ -1518,13 +1515,12 @@ Data Load(char file[])
             data.lines[line].typeOfLine = UNIVERSUM;
 
             //kontrola nevalidniho prvku
-            for(int i = 0; i < data.universum->count; i++)
+            for (int i = 0; i < data.universum->count; i++)
             {
-                if(isCommand(data.universum->elements[i]) == true)
+                if (isCommand(data.universum->elements[i]) == true)
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-
                 }
             }
 
@@ -1538,11 +1534,13 @@ Data Load(char file[])
             universumLoaded = 1;
             break;
         case 'S':
-            if (data.universum == NULL)
+            if (!universumLoaded)
             {
+
                 fprintf(stderr, "Nezadano universum");
                 data.err = true;
-
+                fclose(fp);
+                return data;
             }
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
             if (data.setsCout >= dataSetBufferSize)
@@ -1555,7 +1553,6 @@ Data Load(char file[])
                 {
                     fprintf(stderr, "Chyba pri reallokaci.");
                     data.err = true;
-
                 }
             }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
@@ -1578,13 +1575,12 @@ Data Load(char file[])
             }
 
             //kontrola nevalidniho prvku
-            for(int i = 0; i < data.sets[data.setsCout]->count; i++)
+            for (int i = 0; i < data.sets[data.setsCout]->count; i++)
             {
-                if(isCommand(data.sets[data.setsCout]->elements[i]) == true)
+                if (isCommand(data.sets[data.setsCout]->elements[i]) == true)
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-
                 }
             }
 
@@ -1604,11 +1600,13 @@ Data Load(char file[])
         case 'R':
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
 
-            if (data.universum == NULL)
+            if (!universumLoaded)
             {
+
                 fprintf(stderr, "Nezadano universum");
                 data.err = true;
-
+                fclose(fp);
+                return data;
             }
 
             if (data.relationsCount >= dataRealtionBufferSize)
@@ -1621,7 +1619,6 @@ Data Load(char file[])
                     fprintf(stderr, "Chyba pri reallokaci.");
                     data.err = true;
                     fclose(fp);
-
                 }
             }
             data.relations[data.relationsCount] = (Relation *)malloc(sizeof(Relation));
@@ -1645,22 +1642,20 @@ Data Load(char file[])
             }
 
             //kontrola duplicitnich prvku
-            if(DuplicitElementInRelation(data.relations[data.relationsCount]) == true)
+            if (DuplicitElementInRelation(data.relations[data.relationsCount]) == true)
             {
                 fprintf(stderr, "Duplicitni prvek v relaci.");
                 data.err = true;
-
             }
 
             //kontrola nevalidniho prvku
-            for(int i = 0; i < data.relations[data.relationsCount]->count; i++)
+            for (int i = 0; i < data.relations[data.relationsCount]->count; i++)
             {
-                if( (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true) ||
-                    (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true)    )
+                if ((isCommand(data.relations[data.relationsCount]->elements[i][0]) == true) ||
+                    (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true))
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-
                 }
             }
 
@@ -1680,6 +1675,12 @@ Data Load(char file[])
             }
             break;
         case 'C':
+
+            if (data.relationsCount == 0 && data.setsCout == 0)
+            {
+                fprintf(stderr, "Nezadana zadna relace ani mnozina");
+                data.err = true;
+            }
             if (doCommand(fp, data) != 0)
             {
                 data.err = 1;
@@ -1695,7 +1696,8 @@ Data Load(char file[])
             break;
         }
         line++;
-        if(line>1000){
+        if (line > 1000)
+        {
             fprintf(stderr, "Vic jak 1000 radku.");
             data.err = true;
             fclose(fp);
