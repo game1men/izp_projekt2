@@ -1695,6 +1695,12 @@ Data Load(char file[])
             break;
         }
         line++;
+        if(line>1000){
+            fprintf(stderr, "Vic jak 1000 radku.");
+            data.err = true;
+            fclose(fp);
+            return data;
+        }
     }
     data.lineCount = line;
     fclose(fp);
