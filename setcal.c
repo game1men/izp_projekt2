@@ -412,16 +412,53 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
 {
     for (int i = 0; i < relation->count; i++)
     {
-        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][1], setB)) == false)
         {
             return false;
         }
     }
 
-    //podle soucasneho zadání platí surjektivita vždy, protože ji testujeme nad relací a ne nad množinami, jediné co nás zajímá je to, zda prvky patri do relace
-    //pozn. surjektivita = každý prvek z B má k soubě nějaké A, těch může mít i víc
-    //pozn. aby dávalo určení relace smysl, tak by v zadání muselo být napsané něco ve smyslu určete, zda relace R znázorňuje surjektivitu mnozin A a B
+    //relací musi byt vždy vice nebo stejne jak prvku v mnozine B
+    if(relation->count < setB->count)
+    {
+        return false;
+    }
 
+    //kontrola, zda jsem v relaci pouzil vsechny prvky z mnoziny B
+    bool isIn;
+    for (int i = 0; i < setB->count; i++)
+    {
+        isIn = false;
+        for (int j = 0; j < relation->count; j++)
+        {
+            if (strcmp(relation->elements[j][1], setB->elements[i]) == 0) 
+            {
+                isIn = true;
+            }
+        }
+        if(isIn == false)
+        {
+            return false;
+        }
+    }
+
+    int a;
+    for (int i = 0; i < relation->count; i++)
+    {
+        a = 0;
+        for (int j = 0; j < relation->count; j++)
+        {
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
+            {
+                a++;
+            }
+            if (a >= 2)
+            {
+                return false;
+            }
+        }
+
+    }
     return true;
 }
 
