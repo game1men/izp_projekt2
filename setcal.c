@@ -357,23 +357,42 @@ bool injective(Relation *relation, Set *setA, Set *setB)
 {
     for (int i = 0; i < relation->count; i++)
     {
-        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][0], setB)) == false)
+        if ((isInSet(relation->elements[i][0], setA) && isInSet(relation->elements[i][1], setB)) == false)
         {
             return false;
         }
     }
 
-    int a;
+    if(relation->count != setA->count)
+    {
+        return false;
+    }
+
+    if(setA->count > setB->count)
+    {
+        return false;
+    }
+
+    int a, b;
     for (int i = 0; i < relation->count; i++)
     {
         a = 0;
+        b = 0;
         for (int j = 0; j < relation->count; j++)
         {
-            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
+            if (strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
             {
                 a++;
             }
-            if (a > 1)
+            if (a >= 2)
+            {
+                return false;
+            }
+            if (strcmp(relation->elements[i][1], relation->elements[j][1]) == 0)
+            {
+                b++;
+            }
+            if (b >= 2)
             {
                 return false;
             }
