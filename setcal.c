@@ -61,9 +61,12 @@ void FreeRelation(Relation *relation)
 
     for (int i = 0; i < relation->count; i++)
     {
-        free(relation->elements[i][0]);
-        free(relation->elements[i][1]);
-        free(relation->elements[i]);
+        if (relation->elements[i][0] != NULL)
+            free(relation->elements[i][0]);
+        if (relation->elements[i][1] != NULL)
+            free(relation->elements[i][1]);
+        if (relation->elements[i] != NULL)
+            free(relation->elements[i]);
     }
 
     free(relation->elements);
@@ -79,7 +82,8 @@ void FreeSet(Set *set)
 
     for (int i = 0; i < set->count; i++)
     {
-        free(set->elements[i]);
+        if (set->elements[i] != NULL)
+            free(set->elements[i]);
     }
     free(set->elements);
 }
@@ -91,22 +95,32 @@ void FreeSet(Set *set)
  */
 void FreeData(Data data)
 {
+
     for (int i = 0; i < data.relationsCount; i++)
     {
-        FreeRelation(data.relations[i]);
+        if (data.relations[i] != NULL)
+            FreeRelation(data.relations[i]);
         free(data.relations[i]);
     }
+
     for (int i = 0; i < data.setsCout; i++)
     {
-        FreeSet(data.sets[i]);
+        if (data.sets[i] != NULL)
+            FreeSet(data.sets[i]);
         free(data.sets[i]);
     }
 
-    FreeSet(data.universum);
-    free(data.universum);
-    free(data.lines);
-    free(data.relations);
-    free(data.sets);
+    if (data.universum != NULL)
+    {
+        FreeSet(data.universum);
+        free(data.universum);
+    }
+    if (data.universum != NULL)
+        free(data.lines);
+    if (data.universum != NULL)
+        free(data.relations);
+    if (data.universum != NULL)
+        free(data.sets);
 }
 
 void printSet(Set set);
@@ -408,37 +422,36 @@ bool bijective(Relation *relation, Set *setA, Set *setB)
     return false;
 }
 
-
 /**
  * @brief vypisuje definicni obor nebo obor hodnot, podle toho jestli se jedna o domain nebo codomain
  *
  * @param relation
  * @param identification promenna slouzici k odliseni domain a codomain
  */
-void dom_cod (Relation *relation, int identification)
+void dom_cod(Relation *relation, int identification)
 {
     int usedElements[relation->count + 1];
-    for(int i = 0; i < relation->count + 1; i++)
+    for (int i = 0; i < relation->count + 1; i++)
     {
         usedElements[i] = -1;
     }
     int j = 0;
     bool con;
     printf("S");
-    for(int i = 0; i < relation->count; i++)
+    for (int i = 0; i < relation->count; i++)
     {
         con = false;
-        for(int x = 0; x < j; x++)
+        for (int x = 0; x < j; x++)
         {
-            
-            if(strcmp(relation->elements[i][identification], relation->elements[(usedElements[x])][identification]) == 0)
+
+            if (strcmp(relation->elements[i][identification], relation->elements[(usedElements[x])][identification]) == 0)
             {
                 con = true;
                 break;
             }
-        }   
+        }
 
-        if(con == false)
+        if (con == false)
         {
             usedElements[j] = i;
             j++;
@@ -459,7 +472,6 @@ void domain(Relation *relation)
     dom_cod(relation, identification);
     return;
 }
-
 
 /**
  * @brief vypisuje definicni obor
@@ -666,7 +678,7 @@ void subset(Set *setA, Set *setB)
 int getIds(FILE *file, int ids[4], int *parsed)
 {
 
-    char c[100] = {0}; //buffer ynaku
+    char c[100] = {0}; //buffer znaku
     int x = 0;
     //cte radek, dokud nenarazi na konec radku
     for (; (c[x] = fgetc(file)) != '\n'; x++)
@@ -914,7 +926,7 @@ int doCommand(FILE *file, Data data)
             domain((Relation *)(data.lines[ids[0] - 1].line));
         }
         else if (strcmp(cmd, "codomain") == 0)
-        {  
+        {
             if (ids[1] != -1 || ids[0] == -1)
             {
                 fprintf(stderr, "Nespravny pocet argumentu");
@@ -954,7 +966,7 @@ int doCommand(FILE *file, Data data)
 /**
  * @brief vraci bool podle toho, jestli se jedna o nevalidni prvek
  *
- * @param str element 
+ * @param str element
  */
 bool isCommand(char *str)
 {
@@ -981,18 +993,23 @@ int loadSet(FILE *file, Set *set)
 
     //inicializace
     int elementsBufferSize = 20;
-    int charArrayBufferSize = 20;
+    int charArrayBufferSize = 40;
     set->count = 0;
 
     int j = 0;
 
     set->elements = (char **)malloc(elementsBufferSize * sizeof(char *));
+    if (set->elements == NULL)
+    {
+        fprintf(stderr, "Chyba pri allokaci.");
+        return -1;
+    }
     set->elements[0] = (char *)malloc(charArrayBufferSize * sizeof(char));
 
     //pokud se nepodvedla alokace
-    if (set->elements[0] == NULL || set->elements == NULL)
+    if (set->elements[0] == NULL)
     {
-        fprintf(stderr,"Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.");
         return -1;
     }
 
@@ -1006,6 +1023,8 @@ int loadSet(FILE *file, Set *set)
     if (c != ' ')
     { //pokud prvni znak nebyl mezera ukonci funkci a vrati error
         fprintf(stderr, "Chybi mezera za prvnim znakem radku!");
+        set->count = 1;
+        set->elements[0][0] = 0;
         return -1;
     }
 
@@ -1017,18 +1036,18 @@ int loadSet(FILE *file, Set *set)
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c == '(' || c == ')'))
         {
             fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+            set->count = j + 1;
+            set->elements[j][i] = 0;
+
             return -1;
         }
-        //pokud je treba nacist vice znaku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
         if (i >= charArrayBufferSize)
         {
-            charArrayBufferSize += charArrayBufferSize;
-            set->elements[j] = (char *)realloc(set->elements[j], charArrayBufferSize * sizeof(char));
-            if (set->elements[j] == NULL)
-            {
-                fprintf(stderr,"Chyba pri reallokaci.");
-                return -1;
-            }
+            fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+            set->count = j + 1;
+            set->elements[j][i - 1] = 0;
+
+            return -1;
         }
         //ukonci se pokud je na konci souboru
         if (c == EOF)
@@ -1049,10 +1068,9 @@ int loadSet(FILE *file, Set *set)
                 set->elements = (char **)realloc(set->elements, elementsBufferSize * sizeof(char *));
                 if (set->elements == NULL)
                 {
-                    fprintf(stderr,"Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.");
                     return -1;
                 }
-
             }
 
             //alokace místa pro další prvek
@@ -1060,7 +1078,7 @@ int loadSet(FILE *file, Set *set)
             //pokud se nepodvedla alokace
             if (set->elements[j] == NULL)
             {
-                fprintf(stderr,"Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.");
                 return -1;
             }
             //vynulovani i (-1 aby po inkrementaci bylo 0)
@@ -1076,7 +1094,7 @@ int loadSet(FILE *file, Set *set)
         set->elements[j] = (char *)realloc(set->elements[j], (charArrayBufferSize + 1) * sizeof(char));
         if (set->elements[j] == NULL)
         {
-            fprintf(stderr,"Chyba pri reallokaci.");
+            fprintf(stderr, "Chyba pri reallokaci.");
             return -1;
         }
     }
@@ -1084,23 +1102,23 @@ int loadSet(FILE *file, Set *set)
     set->elements[j][i] = 0;
     //pocet prvku je o 1 vetsi jak index
     set->count = j + 1;
-    
+
     //kontrola duplicitnich prvku
     int elInSet = 0;
-    for(int i = 0; i < set->count; i++)
+    for (int i = 0; i < set->count; i++)
     {
-        if(set->elements[i][0] == '(')
+        if (set->elements[i][0] == '(')
             break;
         elInSet = 0;
-        for(int j = 0; j < set->count; j++)
+        for (int j = 0; j < set->count; j++)
         {
             if (strcmp(set->elements[j], set->elements[i]) == 0)
             {
                 elInSet++;
             }
-            if(elInSet >= 2)
+            if (elInSet >= 2)
             {
-                fprintf(stderr,"Duplicitni prvek v mnozine.");
+                fprintf(stderr, "Duplicitni prvek v mnozine.");
                 return -1;
             }
         }
@@ -1137,11 +1155,13 @@ int loadRelation(FILE *file, Relation *relation)
 {
     //inicializace
     relation->count = 0;
+    relation->elements = NULL;
     Set set;
     //int relationsBufferSize = 20;
     //nacteni prvku ze radku oddelenych mezerou TODO: udelat specialni funkci na toto a nepouzivat loadSet
     if (loadSet(file, &set) == -1)
     {
+        FreeSet(&set);
         return -1;
     }
 
@@ -1150,7 +1170,8 @@ int loadRelation(FILE *file, Relation *relation)
 
     if (relation->elements == NULL)
     {
-        fprintf(stderr,"Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.");
+        FreeSet(&set);
         return -1;
     }
 
@@ -1160,7 +1181,8 @@ int loadRelation(FILE *file, Relation *relation)
 
         if (relation->elements[i] == NULL)
         {
-            fprintf(stderr,"Chyba pri allokaci.");
+            fprintf(stderr, "Chyba pri allokaci.");
+            FreeSet(&set);
             return -1;
         }
     }
@@ -1172,7 +1194,8 @@ int loadRelation(FILE *file, Relation *relation)
         relation->elements[f][(i % 2)] = (char *)malloc(32 * sizeof(char));
         if (relation->elements[f][(i % 2)] == NULL)
         {
-            fprintf(stderr,"Chyba pri allokaci.");
+            fprintf(stderr, "Chyba pri allokaci.");
+            FreeSet(&set);
             return -1;
         }
 
@@ -1321,14 +1344,14 @@ bool DuplicitElementInRelation(Relation *relation)
         elIsIn = 0;
         for(int j = 0; j < relation->count; j++)
         {
-            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0) 
+            if(strcmp(relation->elements[i][0], relation->elements[j][0]) == 0)
             {
                 if(strcmp(relation->elements[i][1], relation->elements[j][1]) == 0)
                 {
-                    elIsIn++;   
+                    elIsIn++;
                     if(elIsIn >=2)
                     {
-                        return true; 
+                        return true;
                     }
                 }
             }
@@ -1383,6 +1406,9 @@ Data Load(char file[])
 {
     //inicializace
     Data data;
+    data.universum = NULL;
+    data.relations = NULL;
+    data.sets = NULL;
     data.setsCout = 0;
     data.relationsCount = 0;
     data.err = false;
@@ -1405,11 +1431,12 @@ Data Load(char file[])
 
     if (data.sets == NULL || data.universum == NULL || data.relations == NULL || data.lines == NULL)
     {
-        fprintf(stderr,"Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.");
         data.err = true;
         return data;
     }
     //nacitani prvniho znaku na kazdym radku
+    bool universumLoaded =0;
     while ((c = fgetc(fp)) != EOF)
     {
         data.lines[line].typeOfLine = NONE;
@@ -1417,11 +1444,17 @@ Data Load(char file[])
         {
 
         case 'U':
+
+            if (universumLoaded)
+            {
+                fprintf(stderr, "Universum zadano vice nez 1");
+                data.err = true;
+                return data;
+            }
             if (loadSet(fp, data.universum))
             {
                 fprintf(stderr, "Nepodarilo se nacist universum.");
                 data.err = true;
-                return data;
             }
             data.lines[line].line = data.universum;
             data.lines[line].typeOfLine = UNIVERSUM;
@@ -1429,19 +1462,30 @@ Data Load(char file[])
             //kontrola nevalidniho prvku
             for(int i = 0; i < data.universum->count; i++)
             {
-                if(isCommand(data.universum->elements[i]) == true) 
+                if(isCommand(data.universum->elements[i]) == true)
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-                    return data; 
+                    return data;
                 }
             }
 
             printUniversum(*data.universum);
             printf("\n");
+            if (data.err == 1)
+            {
+                fclose(fp);
+                return data;
+            }
+            universumLoaded = 1;
             break;
         case 'S':
-
+            if (data.universum == NULL)
+            {
+                fprintf(stderr, "Nezadano universum");
+                data.err = true;
+                return data;
+            }
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
             if (data.setsCout >= dataSetBufferSize)
             {
@@ -1451,7 +1495,7 @@ Data Load(char file[])
 
                 if (data.sets == NULL || data.lines == NULL)
                 {
-                    fprintf(stderr,"Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.");
                     data.err = true;
                     return data;
                 }
@@ -1460,32 +1504,29 @@ Data Load(char file[])
             //pokud se alkoce nepoved, vrati data s err
             if (data.sets[data.setsCout] == NULL)
             {
-                fprintf(stderr,"Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.");
                 data.err = true;
-                return data;
             }
             if (loadSet(fp, data.sets[data.setsCout]) == -1)
             {
                 fprintf(stderr, "Nepodarilo se nacist mnozinu.");
                 data.err = true;
-                return data;
             }
             //Kontrola, jestli vsechny prvky patri do universa.
             if (SetContainsOnlyElementsFromSetA(data.universum, data.sets[data.setsCout]) == -1)
             {
                 fprintf(stderr, "Prvek nepatri do univerza!!");
                 data.err = true;
-                return data;
             }
-            
+
             //kontrola nevalidniho prvku
             for(int i = 0; i < data.sets[data.setsCout]->count; i++)
             {
-                if(isCommand(data.sets[data.setsCout]->elements[i]) == true) 
+                if(isCommand(data.sets[data.setsCout]->elements[i]) == true)
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-                    return data; 
+                    return data;
                 }
             }
 
@@ -1495,9 +1536,23 @@ Data Load(char file[])
             printSet(*data.sets[data.setsCout]);
             printf("\n");
             data.setsCout++;
+            if (data.err == 1)
+            {
+
+                fclose(fp);
+                return data;
+            }
             break;
         case 'R':
             //pokud je treba nacist vice setu nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
+
+            if (data.universum == NULL)
+            {
+                fprintf(stderr, "Nezadano universum");
+                data.err = true;
+                return data;
+            }
+
             if (data.relationsCount >= dataRealtionBufferSize)
             {
                 dataRealtionBufferSize += dataRealtionBufferSize;
@@ -1505,8 +1560,9 @@ Data Load(char file[])
                 data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
                 if (data.relations == NULL || data.lines == NULL)
                 {
-                    fprintf(stderr,"Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.");
                     data.err = true;
+                    fclose(fp);
                     return data;
                 }
             }
@@ -1514,23 +1570,20 @@ Data Load(char file[])
             //pokud se alkoce nepoved, vrati data s err
             if (data.relations[data.relationsCount] == NULL)
             {
-                fprintf(stderr,"Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.");
                 data.err = true;
-                return data;
             }
 
             if (loadRelation(fp, data.relations[data.relationsCount]) == -1)
             {
                 fprintf(stderr, "Nepodarilo se nacist mnozinu.");
                 data.err = true;
-                return data;
             }
             //Kontrola, jestli vsechny prvky patri do universa.
             if (RelationContainsOnlyElementsFromSetA(data.universum, data.relations[data.relationsCount]) == -1)
             {
                 fprintf(stderr, "Prvek nepatri do univerza!!");
                 data.err = true;
-                return data;
             }
 
             //kontrola duplicitnich prvku
@@ -1549,7 +1602,7 @@ Data Load(char file[])
                 {
                     fprintf(stderr, "Jedna se o nevalidni prvek.");
                     data.err = true;
-                    return data; 
+                    return data;
                 }
             }
 
@@ -1561,21 +1614,26 @@ Data Load(char file[])
             data.lines[line].typeOfLine = RELATION;
             data.relations[data.relationsCount]->id = line;
             data.relationsCount++;
+            if (data.err == 1)
+            {
+
+                fclose(fp);
+                return data;
+            }
             break;
         case 'C':
             if (doCommand(fp, data) != 0)
             {
                 data.err = 1;
+                fclose(fp);
                 return data;
             }
             break;
         default:
-            if (doCommand(fp, data) != 0)
-            {
-                fprintf(stderr, "nezname znak na zacatku radku!");
-                data.err = true;
-                return data;
-            }
+            fprintf(stderr, "nezname znak na zacatku radku!");
+            data.err = true;
+            fclose(fp);
+            return data;
             break;
         }
         line++;
@@ -1602,8 +1660,6 @@ int main(int argc, char **argv)
     FreeData(data);
     // Load("test.txt");
     //printData(Load("test.txt"));
-
-
 
     return data.err;
 }

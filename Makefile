@@ -15,6 +15,9 @@ s: setcal.c
 c: setcal
 	(cd tests-izp-projekt-2 && python3 test.py ../setcal)
 
+cv: setcal
+	(cd tests-izp-projekt-2 && python3 test.py --valgrind ../setcal)
+
 check: setcal
 	(cd ../tests-izp-projekt-2 && python3 test.py ../izp_projekt2/setcal)
 
