@@ -1,8 +1,7 @@
 /*
-Projekt 2 - Práce s datovými strukturami
+Projekt 2 - Prace s datovymi strukturami
 
-github repozitář:   https://github.com/game1men/izp_projekt2
-trello nástěnka:    https://trello.com/invite/b/8VlO86Y4/369b11166d8734d1b1869ed0ebb6003a/izpprojekt2
+github repozitar:   https://github.com/game1men/izp_projekt2
 
 vytvorili:
     Rene Ceska          xceska06    https://github.com/game1men
@@ -19,14 +18,14 @@ vytvorili:
 
 typedef struct
 {
-    char **elements; //elementy setu
+    char **elements; //elementy setu [prvek][znak]
     int count;       //pocet elementu setu
-    int id;          // radek na kterem je set
+    int id;          //radek na kterem je set
 } Set;
 
 typedef struct
 {
-    char ***elements; //elementy relace
+    char ***elements; //elementy relace [prvek][leva strana = 0, prava strana = 1][znak]
     int count;        //pocet elementu relace
     int id;           //radek na kterem je relace
 } Relation;
@@ -48,11 +47,11 @@ typedef struct
 typedef struct
 {
     Line *lines;          //reference na sety a relace podle radku
-    Set **sets;           // vsechny nactene sety
+    Set **sets;           //vsechny nactene sety
     int setsCout;         //pocet setu
-    Relation **relations; // vsechny nactene relace
+    Relation **relations; //vsechny nactene relace
     int relationsCount;   //pocet relaci
-    Set *universum;       // universum
+    Set *universum;       //universum
     bool err;             //nastal error
     int lineCount;        //pocet nahranych radku
 } Data;
@@ -136,7 +135,7 @@ void FreeData(Data data)
         free(data.sets);
 }
 
-void printSet(Set set);
+void printSet(Set set, char c);
 
 /**
  * @brief true nebo false podle toho, zda se prvky rovnají
@@ -360,7 +359,7 @@ void boolPrint(bool bol)
     }
 }
 /**
- * @brief zjišťuje jestli je relace injektivní a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * @brief zjistuje jestli je relace injektivni a jestli jeji prvky patri do mnozin A a B, podle toho vraci bool
  *
  * @param relation
  * @param setA
@@ -415,7 +414,7 @@ bool injective(Relation *relation, Set *setA, Set *setB)
 }
 
 /**
- * @brief zjišťuje jestli je relace surjektivni a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * @brief zjistuje jestli je relace surjektivni a jestli jeji prvky patri do mnozin A a B, podle toho vraci bool
  *
  * @param relation
  * @param setA
@@ -431,7 +430,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
         }
     }
 
-    //relací musi byt vždy vice nebo stejne jak prvku v mnozine B
+    //relaci musi byt vzdy vice nebo stejne jak prvku v mnozine B
     if (relation->count < setB->count)
     {
         return false;
@@ -475,7 +474,7 @@ bool surjective(Relation *relation, Set *setA, Set *setB)
 }
 
 /**
- * @brief zjišťuje jestli je relace bijektivni(surjektivni i injektivni) a jestli její prvky patří do množin A a B, podle toho vrací bool
+ * @brief zjistuje jestli je relace bijektivni(surjektivni i injektivni) a jestli jeji prvky patri do mnozin A a B, podle toho vraci bool
  *
  * @param relation
  * @param setA
@@ -554,7 +553,7 @@ void codomain(Relation *relation)
 }
 
 /**
- * @brief tiskne počet prvků v množině A (definované na řádku A).
+ * @brief tiskne pocet prvku v mnozine A (definovane na radku A).
  *
  * @param set
  */
@@ -674,7 +673,7 @@ void minus(Set *setA, Set *setB)
 }
 
 /**
- * @brief vypisuje true alebo false, ak množina A je podmnožinou množiny B
+ * @brief vypisuje true alebo false, ak mnozina A je podmnozinou mnoziny B
  *
  * @param setA
  * @param setB
@@ -703,7 +702,7 @@ void subseteq(Set *setA, Set *setB)
 }
 
 /**
- * @brief vypisuje true alebo false, ak je množina A vlastnou podmnožinou množiny B
+ * @brief vypisuje true alebo false, ak je mnozina A vlastnou podmnozinou mnoziny B
  *
  * @param setA
  * @param setB
@@ -737,7 +736,7 @@ void subset(Set *setA, Set *setB)
 }
 
 /**
- * @brief Získá všehny id z daneho radku.
+ * @brief Ziska vsehny id z daneho radku.
  *
  * @param file ukazatel na soubor
  * @param ids bere pole ids, do ktereho ulozi ziskana id
@@ -785,10 +784,10 @@ int getIds(FILE *file, int ids[4], int *parsed)
 int doCommand(FILE *file, Data data)
 {
 
-    //buffer 32 znaků bude určitě stačit, jelikoz predem zname vsechny mozne prikazi
+    //buffer 32 znaků bude stacit, jelikoz predem zname vsechny mozne prikazi
     char cmd[32];
 
-    //fscanf umí brát stringy podle mezer
+    //fscanf umi brat stringy podle mezer
     fscanf(file, "%31s", cmd);
     //nastavime pole id do -1, aby se dalo poznat ktera id byla nalezena, a ktera ne (tam kde je -1 nebylo ulozeno zadne id)
     int ids[4] = {-1, -1, -1, -1};
@@ -797,7 +796,7 @@ int doCommand(FILE *file, Data data)
     int parsed;
     if (getIds(file, ids, &parsed) == -1)
     {
-        fprintf(stderr, "Prilis mnoho argumentu");
+        fprintf(stderr, "Prilis mnoho argumentu\n");
         return -1;
     }
 
@@ -831,7 +830,7 @@ int doCommand(FILE *file, Data data)
                         break;
                     }
                 }
-                fprintf(stderr, "Nelze provest prikaz mezi mnouzinou a relaci");
+                fprintf(stderr, "Nelze provest prikaz mezi mnouzinou a relaci\n");
                 return -1;
             }
         }
@@ -846,7 +845,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             empty((Set *)(data.lines[ids[0] - 1].line));
@@ -856,7 +855,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             card((Set *)(data.lines[ids[0] - 1].line));
@@ -866,7 +865,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             complement((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
@@ -876,7 +875,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             unionAB((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
@@ -886,7 +885,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             intersect((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
@@ -896,7 +895,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             minus((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
@@ -906,7 +905,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             subseteq((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
@@ -916,7 +915,7 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             subset((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
@@ -926,14 +925,14 @@ int doCommand(FILE *file, Data data)
             //pokud bylo zadano vice nebo mene argumentu, nez bylo treba vyhod chybu
             if (ids[2] != -1 || ids[0] == -1 || ids[1] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             equals((Set *)(data.lines[ids[0] - 1].line), (Set *)(data.lines[ids[1] - 1].line));
         }
         else
         {
-            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na mnozine");
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na mnozine\n");
             return -1;
         }
     }
@@ -943,7 +942,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             reflexive((Relation *)(data.lines[ids[0] - 1].line), (Set *)(data.universum));
@@ -952,7 +951,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             symmetric((Relation *)(data.lines[ids[0] - 1].line));
@@ -961,7 +960,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             antisymmetric((Relation *)(data.lines[ids[0] - 1].line));
@@ -970,7 +969,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             transitive((Relation *)(data.lines[ids[0] - 1].line));
@@ -979,7 +978,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             function((Relation *)(data.lines[ids[0] - 1].line));
@@ -988,7 +987,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             domain((Relation *)(data.lines[ids[0] - 1].line));
@@ -997,7 +996,7 @@ int doCommand(FILE *file, Data data)
         {
             if (ids[1] != -1 || ids[0] == -1)
             {
-                fprintf(stderr, "Nespravny pocet argumentu");
+                fprintf(stderr, "Nespravny pocet argumentu\n");
                 return -1;
             }
             codomain((Relation *)(data.lines[ids[0] - 1].line));
@@ -1019,13 +1018,13 @@ int doCommand(FILE *file, Data data)
         }
         else
         {
-            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci");
+            fprintf(stderr, "Neplatny prikaz, nebo prikaz nelze provest na relaci\n");
             return -1;
         }
     }
     else //pokud se nejedna o prikaz na mnozine ani o prikaz na relaci, tak se jedna o chybu
     {
-        fprintf(stderr, "Prikaz nelze provest na tomto radku");
+        fprintf(stderr, "Prikaz nelze provest na tomto radku\n");
         return -1;
     }
     return 0;
@@ -1061,7 +1060,7 @@ int loadSet(FILE *file, Set *set)
 
     //inicializace
     int elementsBufferSize = 20;
-    int charArrayBufferSize = 40;
+    int charArrayBufferSize = 60;
     set->count = 0;
 
     int j = 0;
@@ -1069,7 +1068,7 @@ int loadSet(FILE *file, Set *set)
     set->elements = (char **)malloc(elementsBufferSize * sizeof(char *));
     if (set->elements == NULL)
     {
-        fprintf(stderr, "Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.\n");
         free(set->elements);
         return -1;
     }
@@ -1078,7 +1077,7 @@ int loadSet(FILE *file, Set *set)
     //pokud se nepodvedla alokace
     if (set->elements[0] == NULL)
     {
-        fprintf(stderr, "Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.\n");
         free(set->elements[0]);
         return -1;
     }
@@ -1092,19 +1091,19 @@ int loadSet(FILE *file, Set *set)
     }
     if (c != ' ')
     { //pokud prvni znak nebyl mezera ukonci funkci a vrati error
-        fprintf(stderr, "Chybi mezera za prvnim znakem radku!");
+        fprintf(stderr, "Chybi mezera za prvnim znakem radku!\n");
         free(set->elements[0]);
         return -1;
     }
 
     //nacita znaky dokud nenarazi na konec radku
     int i = 0;
-    for (; (c = fgetc(file)) != '\n'; i++)
+    for (; (c = fgetc(file)) != EOF && c != '\n'; i++)
     {
         //pokud obsahuje prvky co nepatri do nazvu prvku/relace vyhod chybu
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c == '(' || c == ')'))
         {
-            fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+            fprintf(stderr, "Neplatny znak v nazvu prvku!!\n");
             set->count = j + 1;
             set->elements[j][i] = 0;
 
@@ -1112,42 +1111,37 @@ int loadSet(FILE *file, Set *set)
         }
         if (i >= charArrayBufferSize)
         {
-            fprintf(stderr, "Neplatny znak v nazvu prvku!!");
+            fprintf(stderr, "Prvek je delsi nez maximalni povolena delka!!\n");
             set->count = j + 1;
             set->elements[j][i - 1] = 0;
 
             return -1;
         }
-        //ukonci se pokud je na konci souboru
-        if (c == EOF)
-        {
-            break;
-        }
-        //rozdeli jednotlive prvky podle mezer (TODO: detekce vice mezer za sebou)
+        //rozdeli jednotlive prvky podle mezer
         if (c == ' ')
         {
             //ukonci retezec 0
             set->elements[j][i] = 0;
 
             j++;
-            //pokud je treba nacist vice prvku byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
+            //pokud je treba nacist vice prvku nez byl alokovan buffer, tak se zvetsi o velikost puvodniho bufferu
             if (j >= elementsBufferSize)
             {
                 elementsBufferSize += elementsBufferSize;
                 set->elements = (char **)realloc(set->elements, elementsBufferSize * sizeof(char *));
                 if (set->elements == NULL)
                 {
-                    fprintf(stderr, "Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.\n");
                     return -1;
                 }
             }
 
-            //alokace místa pro další prvek
+            //alokace mista pro dalsi prvek
             set->elements[j] = (char *)malloc(charArrayBufferSize * sizeof(char));
             //pokud se nepodvedla alokace
             if (set->elements[j] == NULL)
             {
-                fprintf(stderr, "Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.\n");
                 return -1;
             }
             //vynulovani i (-1 aby po inkrementaci bylo 0)
@@ -1157,16 +1151,6 @@ int loadSet(FILE *file, Set *set)
         set->elements[j][i] = c;
     }
 
-    //pokud neni misto na null na konci stringu, tak se zvetsi o 1
-    if (i >= charArrayBufferSize)
-    {
-        set->elements[j] = (char *)realloc(set->elements[j], (charArrayBufferSize + 1) * sizeof(char));
-        if (set->elements[j] == NULL)
-        {
-            fprintf(stderr, "Chyba pri reallokaci.");
-            return -1;
-        }
-    }
     //da 0 na konci stringu
     set->elements[j][i] = 0;
     //pocet prvku je o 1 vetsi jak index
@@ -1187,7 +1171,7 @@ int loadSet(FILE *file, Set *set)
             }
             if (elInSet >= 2)
             {
-                fprintf(stderr, "Duplicitni prvek v mnozine.");
+                fprintf(stderr, "Duplicitni prvek v mnozine.\n");
                 return -1;
             }
         }
@@ -1227,7 +1211,7 @@ int loadRelation(FILE *file, Relation *relation)
     relation->elements = NULL;
     Set set;
     //int relationsBufferSize = 20;
-    //nacteni prvku ze radku oddelenych mezerou TODO: udelat specialni funkci na toto a nepouzivat loadSet
+    //nacteni prvku ze radku oddelenych mezerou
     if (loadSet(file, &set) == -1)
     {
         FreeSet(&set);
@@ -1239,7 +1223,7 @@ int loadRelation(FILE *file, Relation *relation)
 
     if (relation->elements == NULL)
     {
-        fprintf(stderr, "Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.\n");
         FreeSet(&set);
         return -1;
     }
@@ -1250,7 +1234,7 @@ int loadRelation(FILE *file, Relation *relation)
 
         if (relation->elements[i] == NULL)
         {
-            fprintf(stderr, "Chyba pri allokaci.");
+            fprintf(stderr, "Chyba pri allokaci.\n");
             FreeSet(&set);
             return -1;
         }
@@ -1305,70 +1289,17 @@ int loadRelation(FILE *file, Relation *relation)
  * @brief Tiskne set
  *
  * @param set
+ * @param c - znak co se ma vypsat na zacatek radku
  */
-void printSet(Set set)
+void printSet(Set set, char c)
 {
-    printf("S");
+    printf("%c", c);
     for (int j = 0; j < set.count; j++)
     {
         printf(" %s", set.elements[j]);
     }
 }
 
-/**
- * @brief Tiskne universum
- *
- * @param set
- */
-void printUniversum(Set set)
-{
-    printf("U");
-    for (int j = 0; j < set.count; j++)
-    {
-        printf(" %s", set.elements[j]);
-    }
-}
-
-/**
- * @brief prints all in Data struct
- *
- * @param data
- */
-void printData(Data data)
-{
-
-    printf("\n universum:\n\n");
-
-    printSet(*data.universum);
-
-    for (int j = 0; j < data.universum->count; j++)
-    {
-
-        printf("%s", data.universum->elements[j]);
-
-        printf(" ");
-    }
-    printf("\n\n sets: \n\n");
-    for (int i = 0; i < data.setsCout; i++)
-    {
-        printf("%d: ", data.sets[i]->id);
-
-        printSet(*data.sets[i]);
-
-        printf("\n");
-    }
-
-    printf("\n\n relations: \n\n");
-    for (int i = 0; i < data.relationsCount; i++)
-    {
-        printf("%d: ", data.relations[i]->id);
-
-        printRelation(*data.relations[i]);
-
-        printf("\n");
-    }
-    printf("\n");
-}
 /**
  * @brief Kontroluje, jestli mnozina obsahuje pouze prvky ze setA
  *
@@ -1376,7 +1307,7 @@ void printData(Data data)
  * @param relation
  * @return int
  *  @retval 0 obsahuje prvky pouze ze setA
- *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ *  @retval -1 obsahuje i jine prvky jak jsou v setA
  */
 int SetContainsOnlyElementsFromSetA(Set *setA, Set *setB)
 {
@@ -1436,7 +1367,7 @@ bool DuplicitElementInRelation(Relation *relation)
  * @param relation
  * @return int
  *  @retval 0 obsahuje prvky pouze ze setA
- *  @retval 0 obsahuje i jine prvky jak jsou v setA
+ *  @retval -1 obsahuje i jine prvky jak jsou v setA
  */
 int RelationContainsOnlyElementsFromSetA(Set *setA, Relation *relation)
 {
@@ -1463,7 +1394,7 @@ int RelationContainsOnlyElementsFromSetA(Set *setA, Relation *relation)
     return 0;
 }
 /**
- * @brief Nacte data ze souboru, a vrati je ve forme structu data
+ * @brief Nacte data ze souboru, a vrati je ve forme structu Data
  *
  * @param file cesta k souboru
  * @return Data
@@ -1478,11 +1409,11 @@ Data Load(char file[])
     data.setsCout = 0;
     data.relationsCount = 0;
     data.err = false;
-    FILE *fp = fopen(file, "r");
 
+    FILE *fp = fopen(file, "r");
     if (fp == NULL)
     {
-        fprintf(stderr, "Chyba pri otevirani souboru.");
+        fprintf(stderr, "Chyba pri otevirani souboru.\n");
         data.err = 1;
         return data;
     }
@@ -1496,15 +1427,15 @@ Data Load(char file[])
     data.universum->elements = NULL;
     data.universum->count = 0;
     int line = 0;
-
+    bool universumLoaded = 0;
     if (data.sets == NULL || data.universum == NULL || data.relations == NULL || data.lines == NULL)
     {
-        fprintf(stderr, "Chyba pri allokaci.");
+        fprintf(stderr, "Chyba pri allokaci.\n");
         data.err = true;
         return data;
     }
+
     //nacitani prvniho znaku na kazdym radku
-    bool universumLoaded = 0;
     while ((c = fgetc(fp)) != EOF)
     {
         data.lines[line].typeOfLine = NONE;
@@ -1515,16 +1446,17 @@ Data Load(char file[])
 
             if (universumLoaded)
             {
-                fprintf(stderr, "Universum zadano vice nez 1");
+                fprintf(stderr, "Universum zadano vice nez 1\n");
                 data.err = true;
                 fclose(fp);
                 return data;
             }
             if (loadSet(fp, data.universum))
             {
-                fprintf(stderr, "Nepodarilo se nacist universum.");
+                fprintf(stderr, "Nepodarilo se nacist universum.\n");
                 data.err = true;
             }
+             //ulozeni ukazatele na spravny radek
             data.lines[line].line = data.universum;
             data.lines[line].typeOfLine = UNIVERSUM;
 
@@ -1533,12 +1465,12 @@ Data Load(char file[])
             {
                 if (isCommand(data.universum->elements[i]) == true)
                 {
-                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    fprintf(stderr, "Jedna se o nevalidni prvek.\n");
                     data.err = true;
                 }
             }
 
-            printUniversum(*data.universum);
+            printSet(*data.universum, 'U');
             printf("\n");
             if (data.err == 1)
             {
@@ -1551,7 +1483,7 @@ Data Load(char file[])
             if (!universumLoaded)
             {
 
-                fprintf(stderr, "Nezadano universum");
+                fprintf(stderr, "Nezadano universum\n");
                 data.err = true;
                 fclose(fp);
                 return data;
@@ -1565,26 +1497,27 @@ Data Load(char file[])
 
                 if (data.sets == NULL || data.lines == NULL)
                 {
-                    fprintf(stderr, "Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.\n");
                     data.err = true;
                 }
             }
             data.sets[data.setsCout] = (Set *)malloc(sizeof(Set));
-            //pokud se alkoce nepoved, vrati data s err
+
+            //pokud se alkoce nepovede, vrati data s err
             if (data.sets[data.setsCout] == NULL)
             {
-                fprintf(stderr, "Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.\n");
                 data.err = true;
             }
             if (loadSet(fp, data.sets[data.setsCout]) == -1)
             {
-                fprintf(stderr, "Nepodarilo se nacist mnozinu.");
+                fprintf(stderr, "Nepodarilo se nacist mnozinu.\n");
                 data.err = true;
             }
             //Kontrola, jestli vsechny prvky patri do universa.
             if (SetContainsOnlyElementsFromSetA(data.universum, data.sets[data.setsCout]) == -1)
             {
-                fprintf(stderr, "Prvek nepatri do univerza!!");
+                fprintf(stderr, "Prvek nepatri do univerza!!\n");
                 data.err = true;
             }
 
@@ -1593,20 +1526,19 @@ Data Load(char file[])
             {
                 if (isCommand(data.sets[data.setsCout]->elements[i]) == true)
                 {
-                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    fprintf(stderr, "Jedna se o nevalidni prvek.\n");
                     data.err = true;
                 }
             }
-
+             //ulozeni ukazatele na spravny radek
             data.sets[data.setsCout]->id = line;
             data.lines[line].line = data.sets[data.setsCout];
             data.lines[line].typeOfLine = SET;
-            printSet(*data.sets[data.setsCout]);
+            printSet(*data.sets[data.setsCout], 'S');
             printf("\n");
             data.setsCout++;
             if (data.err == 1)
             {
-
                 fclose(fp);
                 return data;
             }
@@ -1616,8 +1548,7 @@ Data Load(char file[])
 
             if (!universumLoaded)
             {
-
-                fprintf(stderr, "Nezadano universum");
+                fprintf(stderr, "Nezadano universum\n");
                 data.err = true;
                 fclose(fp);
                 return data;
@@ -1630,35 +1561,35 @@ Data Load(char file[])
                 data.lines = (Line *)realloc(data.lines, (dataSetBufferSize + dataSetBufferSize + 1) * sizeof(Line));
                 if (data.relations == NULL || data.lines == NULL)
                 {
-                    fprintf(stderr, "Chyba pri reallokaci.");
+                    fprintf(stderr, "Chyba pri reallokaci.\n");
                     data.err = true;
                     fclose(fp);
                 }
             }
             data.relations[data.relationsCount] = (Relation *)malloc(sizeof(Relation));
-            //pokud se alkoce nepoved, vrati data s err
+            //pokud se alkoce nepovede, vrati data s err
             if (data.relations[data.relationsCount] == NULL)
             {
-                fprintf(stderr, "Chyba pri allokaci.");
+                fprintf(stderr, "Chyba pri allokaci.\n");
                 data.err = true;
             }
 
             if (loadRelation(fp, data.relations[data.relationsCount]) == -1)
             {
-                fprintf(stderr, "Nepodarilo se nacist mnozinu.");
+                fprintf(stderr, "Nepodarilo se nacist mnozinu.\n");
                 data.err = true;
             }
             //Kontrola, jestli vsechny prvky patri do universa.
             if (RelationContainsOnlyElementsFromSetA(data.universum, data.relations[data.relationsCount]) == -1)
             {
-                fprintf(stderr, "Prvek nepatri do univerza!!");
+                fprintf(stderr, "Prvek nepatri do univerza!!\n");
                 data.err = true;
             }
 
             //kontrola duplicitnich prvku
             if (DuplicitElementInRelation(data.relations[data.relationsCount]) == true)
             {
-                fprintf(stderr, "Duplicitni prvek v relaci.");
+                fprintf(stderr, "Duplicitni prvek v relaci.\n");
                 data.err = true;
             }
 
@@ -1668,7 +1599,7 @@ Data Load(char file[])
                 if ((isCommand(data.relations[data.relationsCount]->elements[i][0]) == true) ||
                     (isCommand(data.relations[data.relationsCount]->elements[i][0]) == true))
                 {
-                    fprintf(stderr, "Jedna se o nevalidni prvek.");
+                    fprintf(stderr, "Jedna se o nevalidni prvek.\n");
                     data.err = true;
                 }
             }
@@ -1677,13 +1608,14 @@ Data Load(char file[])
 
             printf("\n");
 
+            //ulozeni ukazatele na spravny radek
             data.lines[line].line = data.relations[data.relationsCount];
             data.lines[line].typeOfLine = RELATION;
             data.relations[data.relationsCount]->id = line;
             data.relationsCount++;
+
             if (data.err == 1)
             {
-
                 fclose(fp);
                 return data;
             }
@@ -1692,7 +1624,7 @@ Data Load(char file[])
 
             if (data.relationsCount == 0 && data.setsCout == 0)
             {
-                fprintf(stderr, "Nezadana zadna relace ani mnozina");
+                fprintf(stderr, "Nezadana zadna relace ani mnozina.\n");
                 data.err = true;
             }
             if (doCommand(fp, data) != 0)
@@ -1703,7 +1635,7 @@ Data Load(char file[])
             }
             break;
         default:
-            fprintf(stderr, "nezname znak na zacatku radku!");
+            fprintf(stderr, "Neznamy znak na zacatku radku!\n");
             data.err = true;
             fclose(fp);
             return data;
@@ -1712,7 +1644,7 @@ Data Load(char file[])
         line++;
         if (line > 1000)
         {
-            fprintf(stderr, "Vic jak 1000 radku.");
+            fprintf(stderr, "Vic jak 1000 radku.\n");
             data.err = true;
             fclose(fp);
             return data;
@@ -1725,7 +1657,6 @@ Data Load(char file[])
 
 int main(int argc, char **argv)
 {
-    //printData(Load("test.txt"));
     Data data;
     if (argc > 1)
     {
@@ -1733,13 +1664,9 @@ int main(int argc, char **argv)
     }
     else
     {
-        fprintf(stderr, "Nezadana cesta k souboru!");
+        fprintf(stderr, "Nezadana cesta k souboru!\n");
         return -1;
     }
-
     FreeData(data);
-    // Load("test.txt");
-    //printData(Load("test.txt"));
-
     return data.err;
 }
