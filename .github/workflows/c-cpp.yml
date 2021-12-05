@@ -15,8 +15,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: make
       run: make
-    - name: make check
-      run: make check
     - name: make valgrind
       run: make valgrind
 
